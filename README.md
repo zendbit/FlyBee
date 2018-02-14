@@ -45,5 +45,5 @@ python app.py --start myApplication
 
 the command above will run your application on default port 8080, you can also change the configuration but we will talk deeper in other section.
 
-now after application running you just need to point browser to [http://localhost:8080](http://localhost:8080)
+now after application running you just need to point the browser to [http://localhost:8080](http://localhost:8080)
 
