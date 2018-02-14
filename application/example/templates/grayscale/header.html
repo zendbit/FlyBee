@@ -1,0 +1,22 @@
+% from shared import Shared
+<html>
+    <head>
+        <title>{{data.get('page_title')}}</title>
+
+        <!-- add meta -->
+        % grayscaleTheme = Shared().clientScripts().get('grayscale')
+        % for link in grayscaleTheme.get('meta'):
+        <meta {{!link}}>
+        % end
+
+        <!-- add client link -->
+        % for link in grayscaleTheme.get('link'):
+        <link {{!link}}>
+        % end
+
+        <!-- add client script -->
+        % for script in grayscaleTheme.get('script'):
+        <script {{!script}}></script>
+        % end
+    </head>
+    <body id="page-top">
