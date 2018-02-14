@@ -47,4 +47,4 @@ the command above will run your application on default port 8080, you can also c
 
 now after application running you just need to point the browser to [http://localhost:8080](http://localhost:8080)
 
-![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2006.29.40.jpg running the apps)
+![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2006.29.40.jpg "running the apps")
