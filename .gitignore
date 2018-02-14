@@ -102,4 +102,5 @@ ENV/
 
 \.DS_Store
 
-application/example/plugins/session_data/
+application/
+
