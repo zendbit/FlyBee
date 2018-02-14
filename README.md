@@ -6,9 +6,9 @@ Tested on Windows and Unix Systems
 ```
 
 Requirement:
-- [Python 3.x link](https://python.org)
-- [Gevent link](http://gevent.org)
-- [Bottle link](https://bottlepy.org)
+- [Python 3.x](https://python.org)
+- [Gevent](http://gevent.org)
+- [Bottle](https://bottlepy.org)
 
 This microframework will automatic resolve the depedency in the configuration file using pip tools and make easy for deployment and development.
 
