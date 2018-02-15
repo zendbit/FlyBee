@@ -244,3 +244,214 @@ class Shared():
 
         return scripts
 ```
+
+shared.py contain resource to shared accorss application, in the code above contain data() and clientScripts() shared resource.
+
+the data() as you can see is called from the sources/home.py that will be pass to the template data.
+the clientScripts() is contain definition of meta, link and javascript will be used for the themes, we can see that grayscale containt the link, meta and script definition. This clientScripts() is called from templates/grayscale/header.html
+
+```
+% from shared import Shared
+<html>
+    <head>
+        <title>{{data.get('page_title')}}</title>
+
+        <!-- add meta -->
+        % grayscaleTheme = Shared().clientScripts().get('grayscale')
+        % for link in grayscaleTheme.get('meta'):
+        <meta {{!link}}>
+        % end
+
+        <!-- add client link -->
+        % for link in grayscaleTheme.get('link'):
+        <link {{!link}}>
+        % end
+
+        <!-- add client script -->
+        % for script in grayscaleTheme.get('script'):
+        <script {{!script}}></script>
+        % end
+    </head>
+    <body id="page-top">
+```
+
+from this case we can create separate resource that useable from accross the aplication context. But the structure is not restricted you can modify like what you want to do :-D.
+
+ok, this is the final parts. We will discuss about appconfig.py. This file is contain the applicatin configuration you can add the ssl certificate and key then your site will serve as https protocol [https://localhost:8080](https://localhost:8080). hmm easy isn't?
+
+appconfig.py
+
+```
+import os
+from bottle import static_file
+
+class AppConfig():
+
+
+    def appDependency(self):
+
+        '''
+        provide your app depedency will automatic install with pip
+        ex:
+        return = [
+            'request',
+            'gevent',
+            'bottle',
+        ]
+        '''
+        return [
+        ]
+
+
+    def sessionOptions(self):
+        '''
+        control session
+        '''
+        
+        return {
+            'default_max_age':604800,
+            'data_dir':os.path.sep.join([os.getcwd(), 'plugins', 'session_data'])
+        }
+
+
+    def severOptions(self):
+        '''
+        default server option
+        '''
+        return {
+            'host':'localhost',
+            'port':8080,
+            'reloader':True, # set to False for production
+            'debug':True, # set to False for production
+            'server':'gevent',
+            'interval':1,
+            'ssl':{
+                # ssl cert file path ex: os.path.sep.join((os.getcwd(), 'ssl', 'server.crt'))
+                'certfile':None,
+                # ssl key file path ex: os.path.sep.join((os.getcwd(), 'ssl', 'server.key'))
+                'keyfile':None
+            }
+        }
+
+
+    def registerRoutes(self):
+        '''
+        routes of the application
+        add custom routes with
+        return [
+            ['routes path', ['POST', 'GET', 'PUT', 'DELETE', ..etc], handler]
+        ]
+        '''
+
+        from source.home import Home
+
+        return [
+            # serving static file
+            ['/contents/<filename:path>', 'GET', lambda filename: static_file(filename, root=os.path.sep.join([os.getcwd(), 'contents']))],
+
+            # home index test
+            ['/', ['GET'], Home().index],
+        ]
+
+    
+    def systemCleaner(self):
+        '''
+        System cleaner for cleaning session and other
+        you can add other system cleaning here will run each 2 hour
+        '''
+        
+        from plugins.session import Session
+
+        return [
+            Session().CleanExpiredSession
+        ]
+        
+```
+
+the appDependency(self) section is your list of depedency, will be installed using pip tool automatic and sync if target deployment is not meet the depedency.
+
+for example if you use the pymongo for mongodb driver you can add it to the list like this:
+
+```
+def appDependency(self):
+
+        '''
+        provide your app depedency will automatic install with pip
+        ex:
+        return = [
+            'request',
+            'gevent',
+            'bottle',
+        ]
+        '''
+        return [
+        'pymongo'
+        ]
+```
+
+and your system will automatically sync and install the related dependency using pip tool, if target platform did not meet the dependency.
+
+the sessionOptions(self), contain session configuration like max_age and session data folder to store the session file.
+
+```
+def sessionOptions(self):
+        '''
+        control session
+        '''
+        
+        return {
+            'default_max_age':604800,
+            'data_dir':os.path.sep.join([os.getcwd(), 'plugins', 'session_data'])
+        }
+```
+
+the default value is one week max age in seconds.
+
+the serverOptions(self), contain configuration for server the default value is port 8080 but you can changes the value and configure to meet your need.
+
+```
+def severOptions(self):
+        '''
+        default server option
+        '''
+        return {
+            'host':'localhost',
+            'port':8080,
+            'reloader':True, # set to False for production
+            'debug':True, # set to False for production
+            'server':'gevent',
+            'interval':1,
+            'ssl':{
+                # ssl cert file path ex: os.path.sep.join((os.getcwd(), 'ssl', 'server.crt'))
+                'certfile':None,
+                # ssl key file path ex: os.path.sep.join((os.getcwd(), 'ssl', 'server.key'))
+                'keyfile':None
+            }
+        }
+```
+
+for development it's okay to set the reloader and debug to True with interval value 1 seconds. It's mean the realoader will automatically reset te server to manage the code changes.
+
+but if we want to deploy to production we need to change the value of reloader and debut to False.
+
+the registerRoutes(self), this is contain route of our webapplication. This section will maping the the routes of our web and make it clear. For example if you want to pass request parameter routes, your function should meet the parameter of the routes definition
+
+ex:
+
+```
+['/', ['GET'], Home().index] => this will serve the localhost:8080 to Home().index()
+
+['/auth/login', ['GET', 'POST'], Auth().login] => this will serve the localhost:8080/auth/login to Auth().login()
+
+['/user/<id>', ['GET', 'POST'], Employee().details] => this will serve the localhost:8080/user/1 to Employee().details(id)
+
+['/user/<id>/<gid>', ['GET', 'POST'], Employee().details] => this will serve the localhost:8080/user/ to Employee().details(id, gid)
+```
+
+Ok, we finish the flybee framework structure then you also can pass the command option to override serverOptions
+
+```
+python app.py --start myApplication [--host --port --reloader --debug --interval --certfile --keyfile]
+
+python app.py --start myApplication --host 192.168.1.100 --port 9090 --reloader false --debug false
+```
