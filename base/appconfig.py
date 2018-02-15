@@ -59,7 +59,7 @@ class AppConfig():
         ]
         '''
 
-        from source.home import Home
+        from sources.home import Home
 
         return [
             # serving static file
