@@ -70,7 +70,7 @@ Ok, let look inside the myApplication folder:
 #### The main folder:
 - contents : will serving for static file like css, image, javascript, etc. We can add more static serving, but we will discuss later.
 - plugins : this folder contain our library that not direct control to UI, like encryption, Oaut to thidrparty login, database access library, etc.
-- source : this folder contain main control for user response and request. Modify header, status code and return template view. This will interact with the client UI and will related with routes of the webapps.
+- sources : this folder contain main control for user response and request. Modify header, status code and return template view. This will interact with the client UI and will related with routes of the webapps.
 - templates : this folder contain templating sistem, we use templating system from bottle framework.
 
 The structure is not strict you can add more folder or file depend on your need :-)
@@ -95,13 +95,13 @@ from plugins.session import Session
 
 above example is for import Session class from plugins.session module.
 
-#### Take a look at the source folder:
+#### Take a look at the sources folder:
 
 ![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2007.29.42.jpg "source")
 
 inside source folder is just like ordinary python script, contain handler webapplication request and response, the sample is home.py that contain class Home and function index. But it's not restricted you can add functional paradigm not class paradigm.
 
-source/home.py
+sources/home.py
 
 ```
 from bottle import template
@@ -151,5 +151,19 @@ class Home():
 
 from the code above we can see, than there is some sample code of using the session and shared data passing to the template grayscale then return response as normal html page.
 
-#### Take a look at templates folder:
+#### Take a look at the templates folder:
 
+![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2007.39.44.jpg "templates")
+
+The template is contain the html text, the sample is using them grayscale to make it consistent with the content/grayscale. So if we need to create new them we can create in separate folder :-).
+
+The template is fully compatible and same with bottle SimpleTemplate, if you use bottle framework i'ts like eating burger :D.
+
+---
+
+Ok then we will continue with application cofiguration, the application configuration contain:
+- appconfig.py : contain application configuration like, session configuration, database connection, port, server address, ssl, etc. You can customize like what you want to do.
+- appserver.py : this is contain application server starting point state, contain start stop the server, call cleaner system at start up, etc.
+- shared.py : this is contain shared application variable that will be used or always used on accross the application so we don't need to re define it just call from the shared data.
+
+- shared.py
