@@ -71,8 +71,14 @@ Ok, let look inside the myApplication folder:
 - contents : will serving for static file like css, image, javascript, etc. We can add more static serving, but we will discuss later.
 - plugins : this folder contain our library that not direct control to UI, like encryption, Oaut to thidrparty login, database access library, etc.
 - source : this folder contain main control for user response and request. Modify header, status code and return template view. This will interact with the client UI and will related with routes of the webapps.
-- template : this folder contain templating sistem, we use templating system from bottle framework.
+- templates : this folder contain templating sistem, we use templating system from bottle framework.
 
 The structure is not strict you can add more folder or file depend on your need :-)
 
-#### Take look at the contents folder:
+#### Take a look at the contents folder:
+
+[!alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2007.14.22.jpg "contents")
+
+as we can see, the folder content contain themes called grayscale and inside the theme contain the asset for the grayscale them. the main purpose is we can add more theme and keep it separated between them.
+
+#### Take a look at the plugins folder:
