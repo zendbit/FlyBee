@@ -82,3 +82,69 @@ The structure is not strict you can add more folder or file depend on your need 
 as we can see, the folder content contain themes called grayscale and inside the theme contain the asset for the grayscale them. the main purpose is we can add more theme and keep it separated between them.
 
 #### Take a look at the plugins folder:
+
+![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2007.21.37.jpg "plugins")
+
+plugins folder contain some tools for managing the application like session, simple ecryption, http status code constant and system cleaner.
+
+of course you can create custom plugin, and we can import it accross the application using import tag:
+
+```
+from plugins.session import Session
+```
+
+above example is for import Session class from plugins.session module.
+
+#### Take a look at the source folder:
+
+![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2007.29.42.jpg "source")
+
+inside source folder is just like ordinary python script, contain handler webapplication request and response, the sample is home.py that contain class Home and function index. But it's not restricted you can add functional paradigm not class paradigm.
+
+source/home.py
+
+```
+from bottle import template
+from shared import Shared
+from plugins.session import Session
+
+class Home():
+
+    def index(self):
+
+        ################################################
+        # example using session from -> from plugins.session import Session
+        session = Session()
+
+        #print(dir(bottle.ext))
+        # set max session age, default is 30 days
+        # parameter in seconds
+        # session.setMaxAge(1)
+
+        session.add('cd', '3')
+        session.add('dvd', 3)
+
+        sessionData = session.get()
+        print(sessionData)
+
+        session.remove('cd')
+        sessionData = session.get()
+        print(sessionData)
+
+        #print(session.getExpired())
+
+        # if you want to clear session use this method
+        # session.clear()
+        ###############################################
+
+        # example using shared data for from -> from shared import Shared
+        data = Shared().data()
+        data['top_menu'] = {
+            'start_flybee':'Start FlyBee',
+            'about':'About',
+            'get_started':'Get Started'
+        }
+
+
+        return template('templates/grayscale/home.html', data=data)
+```
