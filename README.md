@@ -10,7 +10,7 @@ Tested on Windows and Unix Systems
 - [Gevent](http://gevent.org)
 - [Bottle](https://bottlepy.org)
 
-This microframework will automatic resolve the depedency in the configuration file using pip tools and make easy for deployment and development.
+This microframework will automatic resolve the depedencies using the configuration file with pip tools and make easy for deployment and development.
 
 #### The framework only have:
 - app.py
@@ -59,7 +59,7 @@ You can start more than one application but must with different port.
 
 #### Application folder structure:
 
-let we use the myApplication and myApplication2 as example, the app that we create will placed under application folder. Look like this:
+let we use the myApplication and myApplication2 as example, the apps that already created will placed under application folder. Look like this:
 
 ![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2006.48.13.jpg "app struct")
 
@@ -68,18 +68,18 @@ Ok, let look inside the myApplication folder:
 ![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2006.55.06.jpg "struct")
 
 #### The main folder:
-- contents : will serving for static file like css, image, javascript, etc. We can add more static serving, but we will discuss later.
-- plugins : this folder contain our library that not direct control to UI, like encryption, Oaut to thidrparty login, database access library, etc.
+- contents : will serving static file like css, image, javascript, etc. We can add more static serving. We will discuss later.
+- plugins : this folder contain our library that not direct control to UI, like encryption, Oauth to thirdparty login, database access library, etc.
 - sources : this folder contain main control for user response and request. Modify header, status code and return template view. This will interact with the client UI and will related with routes of the webapps.
 - templates : this folder contain templating sistem, we use templating system from bottle framework.
 
-The structure is not strict you can add more folder or file depend on your need :-)
+The structure is not strict you can add more folder or file depend on your needs :-)
 
 #### Take a look at the contents folder:
 
 ![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2007.14.22.jpg "contents")
 
-as we can see, the folder content contain themes called grayscale and inside the theme contain the asset for the grayscale them. the main purpose is we can add more theme and keep it separated between them.
+as we can see, the folder content contain themes called grayscale and inside grayscale contain the assets for the grayscale theme. the main purpose is we can add more theme and keep it separated between themes.
 
 #### Take a look at the plugins folder:
 
@@ -87,7 +87,7 @@ as we can see, the folder content contain themes called grayscale and inside the
 
 plugins folder contain some tools for managing the application like session, simple ecryption, http status code constant and system cleaner.
 
-of course you can create custom plugin, and we can import it accross the application using import tag:
+of course you can create custom plugin, and we can import it using import tag:
 
 ```
 from plugins.session import Session
@@ -99,7 +99,7 @@ above example is for import Session class from plugins.session module.
 
 ![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2007.29.42.jpg "source")
 
-inside source folder is just like ordinary python script, contain handler webapplication request and response, the sample is home.py that contain class Home and function index. But it's not restricted you can add functional paradigm not class paradigm.
+inside sources folder it just like ordinary python script, contain handler webapplication request and response, the sample is home.py that contain class Home and function index. But it's not restricted you can add functional paradigm rather than class paradigm.
 
 sources/home.py
 
@@ -149,22 +149,22 @@ class Home():
         return template('templates/grayscale/home.html', data=data)
 ```
 
-from the code above we can see, than there is some sample code of using the session and shared data passing to the template grayscale then return response as normal html page.
+from the code above we can see, there are some sample code how to use the session and shared data passing to the template grayscale then return response as normal html page.
 
 #### Take a look at the templates folder:
 
 ![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2007.39.44.jpg "templates")
 
-The template is contain the html text, the sample is using them grayscale to make it consistent with the content/grayscale. So if we need to create new them we can create in separate folder :-).
+The template is contain html text, the sample is using grayscale theme to make it consistent with the content/grayscale. So if we need to create new theme we can create in separate folder :-).
 
 The template is fully compatible and same with bottle SimpleTemplate, if you use bottle framework i'ts like eating burger :D.
 
 ---
 
 Ok then we will continue with application cofiguration, the application configuration contain:
-- appconfig.py : contain application configuration like, session configuration, database connection, port, server address, ssl, etc. You can customize like what you want to do.
+- appconfig.py : contain application configuration, like session configuration, database connection, port, server address, ssl, etc. You can customize like what you want to do.
 - appserver.py : this is contain application server starting point state, contain start stop the server, call cleaner system at start up, etc.
-- shared.py : this is contain shared application variable that will be used or always used on accross the application so we don't need to re define it just call from the shared data.
+- shared.py : this is contain shared application variable that will be used accross the application so we don't need to re define it just call from the shared data.
 
 ```
 class Shared():
@@ -247,8 +247,8 @@ class Shared():
 
 shared.py contain resource to shared accorss application, in the code above contain data() and clientScripts() shared resource.
 
-the data() as you can see is called from the sources/home.py that will be pass to the template data.
-the clientScripts() is contain definition of meta, link and javascript will be used for the themes, we can see that grayscale containt the link, meta and script definition. This clientScripts() is called from templates/grayscale/header.html
+the data() as you can see it called from the sources/home.py that will be pass to the template data.
+the clientScripts() is contain definition of meta, link and javascript will be used for the templates, we can see that grayscale containt the link, meta and script definition. This clientScripts() is called from templates/grayscale/header.html
 
 ```
 % from shared import Shared
@@ -368,7 +368,7 @@ class AppConfig():
         
 ```
 
-the appDependency(self) section is your list of depedency, will be installed using pip tool automatic and sync if target deployment is not meet the depedency.
+the appDependency(self) section is your list of dependency, will be installed using pip tool automatic and sync if target deployment is not meet the dependency.
 
 for example if you use the pymongo for mongodb driver you can add it to the list like this:
 
