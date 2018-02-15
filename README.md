@@ -77,7 +77,7 @@ The structure is not strict you can add more folder or file depend on your need 
 
 #### Take a look at the contents folder:
 
-[!alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2007.14.22.jpg "contents")
+![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2007.14.22.jpg "contents")
 
 as we can see, the folder content contain themes called grayscale and inside the theme contain the asset for the grayscale them. the main purpose is we can add more theme and keep it separated between them.
 
