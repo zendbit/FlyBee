@@ -148,3 +148,8 @@ class Home():
 
         return template('templates/grayscale/home.html', data=data)
 ```
+
+from the code above we can see, than there is some sample code of using the session and shared data passing to the template grayscale then return response as normal html page.
+
+#### Take a look at templates folder:
+
