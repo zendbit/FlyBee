@@ -5,8 +5,6 @@ import os
 import pickle
 import inspect
 from appconfig import AppConfig
-from threading import Thread
-import threading
 
 class Session():
 
