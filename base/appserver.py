@@ -71,21 +71,24 @@ def emit(kwargs={}):
     if os.access(os.getcwd(), os.W_OK) or (os.is_file(appserverPIDFile) and os.access(appserverPIDFile, os.W_OK)):
         # try to check the address already bind or not
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        alreadyRun = False
         try:
             s.bind((host, port))
             writePID(str(os.getpid()))
 
-        except:
-            pass
+        except Exception as ex:
+            alreadyRun = True
+            print('server already running or address already in used {}:{} -> {}'.format(host, port, ex))
 
         finally:
             s.close()
 
-        if certfile is None or keyfile is None:
-            run(app=app, host=host, port=port, reloader=reloader, debug=debug, server=server, interval=interval)
+        if not alreadyRun:
+            if certfile is None or keyfile is None:
+                run(app=app, host=host, port=port, reloader=reloader, debug=debug, server=server, interval=interval)
 
-        else:
-            run(app=app, host=host, port=port, reloader=reloader, debug=debug, server=server, interval=interval, certfile=certfile, keyfile=keyfile)
+            else:
+                run(app=app, host=host, port=port, reloader=reloader, debug=debug, server=server, interval=interval, certfile=certfile, keyfile=keyfile)
 
     else:
         print('''You don't have write access to {}, need read write access!'''.format(os.getcwd()))
