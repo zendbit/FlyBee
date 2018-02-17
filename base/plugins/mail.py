@@ -225,7 +225,7 @@ class MessageBuilder():
         return self
 
             
-    def attachApplication(self, filePath, mimeType='octet-stream', encoder=encoders.encode_base64, disposition=True, **param):
+    def attachApplication(self, filePath, mimeType='octet-stream', encoder=encoders.encode_base64, disposition=True, **params):
         '''
             attach application
             example:
@@ -236,7 +236,7 @@ class MessageBuilder():
                 'file':filePath,
                 'mimeType':mimeType,
                 'encoder':encoder,
-                'param':param,
+                'param':params,
                 'disposition':disposition,
                 'type':'application'
             })
@@ -273,7 +273,7 @@ class MessageBuilder():
                 'file':filePath,
                 'mimeType':mimeType,
                 'encoder':encoder,
-                'param':param,
+                'param':params,
                 'disposition':disposition,
                 'type':'image',
             })
@@ -298,7 +298,7 @@ class MessageBuilder():
         return self
 
 
-    def attachAudio(self, filePath, mimeType=None, encoder=encoders.encode_base64, disposition=True, **param):
+    def attachAudio(self, filePath, mimeType=None, encoder=encoders.encode_base64, disposition=True, **params):
         '''
             attach audio
             example:
@@ -309,7 +309,7 @@ class MessageBuilder():
                 'file':filePath,
                 'mimeType':mimeType,
                 'encoder':encoder,
-                'param':param,
+                'param':params,
                 'disposition':disposition,
                 'type':'audio'
             })
@@ -317,7 +317,7 @@ class MessageBuilder():
         return self
 
 
-    def attachBase(self, filePath, mimeMain='application', mimeType='octet-stream', encoder=encoders.encode_base64, disposition=True, **param):
+    def attachBase(self, filePath, mimeMain='application', mimeType='octet-stream', encoder=encoders.encode_base64, disposition=True, **params):
         '''
             attach base
             example:
@@ -329,7 +329,7 @@ class MessageBuilder():
                 'main_mime':mimeMain,
                 'mimeType':mimeType,
                 'encoder':encoder,
-                'param':param,
+                'param':params,
                 'disposition':disposition,
                 'type':'base'
             })
