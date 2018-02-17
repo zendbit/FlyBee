@@ -119,6 +119,7 @@ def serverStop(args):
             calloutput = subprocess.run('''taskkill /F /PID {}'''.format(pids), shell=True)
         else:
             calloutput = subprocess.run('''kill -9 {}'''.format(pids), shell=True, stdout=subprocess.PIPE)
+            
         print(calloutput)
 
         if calloutput and calloutput.returncode == 0:

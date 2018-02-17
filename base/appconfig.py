@@ -19,6 +19,47 @@ class AppConfig():
         ]
 
 
+    def smtpOptions(self):
+        '''
+        you can add multiple email configuration (smtp)
+        {
+            'config1':{
+                'server':'smtp.gmail.com',
+                'port':0,
+                'user':'',
+                'password':'',
+                'ssl':{
+                    'certfile':None,
+                    'keyfile':None
+                }
+            },
+            'config2':{
+                'server':'smtp.server1.com',
+                'port':0,
+                'user':'',
+                'password':'',
+                'ssl':{
+                    'certfile':None,
+                    'keyfile':None
+                }
+            }
+        }
+        '''
+
+        return {
+            'mailer_1':{
+                'server':'',
+                'port':0,
+                'user':'',
+                'password':'',
+                'ssl':{
+                    'certfile':None,
+                    'keyfile':None
+                }
+            }
+        }
+
+
     def sessionOptions(self):
         '''
         control session
