@@ -17,4 +17,4 @@ class SimpleCrypto():
             key_c = key[i % len(key)]
             dec_c = chr((256 + enc[i] - ord(key_c)) % 256)
             dec.append(dec_c)
-        return "".join(dec)
+        return ''.join(dec)

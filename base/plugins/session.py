@@ -165,13 +165,13 @@ class Session():
             print(e)
 
 
-    def get(self):
+    def get(self, key=None):
 
         '''
         get()
         get available current session session
         '''
-        sessionData = dict()
+        sessionData = None
         try:
             currentUtcTime = self._getCurrentUtcTimeHash()
 
@@ -183,7 +183,11 @@ class Session():
                 sessionFile = os.path.join(self._sessionOption.get('data_dir'), cookieSessionData)
 
                 if os.path.isfile(sessionFile):
-                    sessionData = self._readSessionFile(sessionFile)
+                    if key:
+                        sessionData = self._readSessionFile(sessionFile).get(key)
+
+                    else:
+                        sessionData = self._readSessionFile(sessionFile)
 
         except Exception as e:
             print(e)
