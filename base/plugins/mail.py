@@ -498,22 +498,8 @@ class IMAPConnect():
 
 
     def __init__(self, config):
-        self.__imapOptions = {
-            'mailer_1':{
-                'server':'imap.gmail.com',
-                'port':None,
-                'user':'amru.rosyada@gmail.com',
-                'password':'tigerbrave86googlegmail',
-                'ssl':{
-                    'certfile':None,
-                    'keyfile':None,
-                    'password':None
-                },
-                'data_dir':os.path.sep.join((os.getcwd(), 'cached_data', 'mail'))
-            }
-        }
-
-        self.__config = self.__imapOptions.get(config)
+        appConfig = AppConfig().imapOptions()
+        self.__config = aappConfig.get(config)
         self.__dataDir = os.path.sep.join((self.__config.get('data_dir'), self.__config.get('user')))
 
 

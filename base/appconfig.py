@@ -19,42 +19,52 @@ class AppConfig():
         ]
 
 
+    def imapOptions(self):
+
+        return {
+            'imap1':{
+                'server':'imap.gmail.com',
+                'port':None,
+                'user':'',
+                'password':'',
+                'ssl':{
+                    'certfile':None,
+                    'keyfile':None,
+                    'password':None
+                },
+                'data_dir':os.path.sep.join((os.getcwd(), 'cached_data', 'mail'))
+            }
+        }
+
+
     def smtpOptions(self):
         '''
         you can add multiple email configuration (smtp)
         {
             'config1':{
                 'server':'smtp.gmail.com',
-                'port':0,
+                'port':None,
                 'user':'',
                 'password':'',
                 'ssl':{
                     'certfile':None,
-                    'keyfile':None
-                }
-            },
-            'config2':{
-                'server':'smtp.server1.com',
-                'port':0,
-                'user':'',
-                'password':'',
-                'ssl':{
-                    'certfile':None,
-                    'keyfile':None
+                    'keyfile':None,
+                    'password':None
                 }
             }
         }
         '''
 
         return {
-            'mailer_1':{
+            'smtp1':{
                 'server':'',
-                'port':0,
+                'port':None,
                 'user':'',
                 'password':'',
                 'ssl':{
                     'certfile':None,
-                    'keyfile':None
+                    'keyfile':None,
+                    'password':None
                 }
             }
         }
@@ -67,7 +77,7 @@ class AppConfig():
         
         return {
             'default_max_age':604800,
-            'data_dir':os.path.sep.join([os.getcwd(), 'plugins', 'session_data'])
+            'data_dir':os.path.sep.join(os.getcwd(), 'cached_data', 'session_data')
         }
 
 
