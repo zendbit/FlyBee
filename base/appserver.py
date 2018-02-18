@@ -45,8 +45,7 @@ def readPID():
     return pid
 
 
-def emit(kwargs={}):
-
+def serverStart(kwargs={}):
     app = Bottle()
     appConfig = AppConfig()
     bottle.TEMPLATES.clear()
@@ -80,6 +79,11 @@ def emit(kwargs={}):
             alreadyRun = True
             print('server already running or address already in used {}:{} -> {}'.format(host, port, ex))
 
+            # if in debug mode try kill the server and force alradyRun to false
+            if reloader and debug:
+                serverStop(kwargs)
+                alreadyRun = False
+
         finally:
             s.close()
 
@@ -94,22 +98,7 @@ def emit(kwargs={}):
         print('''You don't have write access to {}, need read write access!'''.format(os.getcwd()))
 
 
-def serverStart(args):
-    kwargs = {
-        'host':args.host,
-        'port':args.port,
-        'reloader':args.reloader,
-        'debug':args.debug,
-        'server':args.server,
-        'intervel':args.interval,
-        'certfile':args.certfile,
-        'keyfile':args.keyfile
-    }
-
-    emit(kwargs)
-
-
-def serverStop(args):
+def serverStop(kwargs={}):
     pids = readPID()
 
     if pids and pids.strip() != '':
@@ -143,11 +132,22 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    kwargs = {
+        'host':args.host,
+        'port':args.port,
+        'reloader':args.reloader,
+        'debug':args.debug,
+        'server':args.server,
+        'intervel':args.interval,
+        'certfile':args.certfile,
+        'keyfile':args.keyfile
+    }
+
     if args.s == 'start':
-        serverStart(args)
+        serverStart(kwargs)
 
     elif args.s == 'stop':
-        serverStop(args)
+        serverStop(kwargs)
 
     else:
         print('''
