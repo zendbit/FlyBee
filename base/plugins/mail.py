@@ -499,7 +499,7 @@ class IMAPConnect():
 
     def __init__(self, config):
         appConfig = AppConfig().imapOptions()
-        self.__config = aappConfig.get(config)
+        self.__config = appConfig.get(config)
         self.__dataDir = os.path.sep.join((self.__config.get('data_dir'), self.__config.get('user')))
 
 
@@ -810,7 +810,7 @@ class IMAPConnect():
         try:
             status, msg = self.__imap.uid('fetch', emailId, *criterion)
             outputMessage['code'] = IMAPConnect.CODE_OK
-            outputMessage['message'] = status
+            outputMessage['message'] = 'OK'
             outputMessage['data'] = msg
 
         except Exception as ex:
@@ -819,7 +819,7 @@ class IMAPConnect():
         return outputMessage
 
 
-    def storeCommand(self, message_id, command, flag_list):
+    def storeCommand(self, emailId, command, flaglist):
         '''
             store imap flags
             command should be 'FLAGS', '+FLAGS', '-FLAGS', optionaly with suffix of ."SILENT".
@@ -838,7 +838,7 @@ class IMAPConnect():
         }
 
         try:
-            status, msg = self.__imap.uid('STORE', message_id, command, flag_list)
+            status, msg = self.__imap.uid('STORE', emailId, command, flaglist)
             outputMessage['code'] = IMAPConnect.CODE_OK
             outputMessage['message'] = status
             outputMessage['data'] = msg
@@ -878,7 +878,7 @@ class IMAPConnect():
         return outputMessage
 
 
-    def fetchHeader(self, emailId):
+    def fetchHeader(self, emailId, overwrite=False):
         '''
             get header of messages
             return parsed header messages
@@ -898,7 +898,7 @@ class IMAPConnect():
         
         try:
             emailCache = self.unserializeEmailFromFile(emailId)
-            if emailCache.get('code') == IMAPConnect.CODE_OK:
+            if emailCache.get('code') == IMAPConnect.CODE_OK and not overwrite:
                 outputMessage = emailCache
 
             else:
@@ -931,7 +931,7 @@ class IMAPConnect():
         return outputMessage
 
 
-    def fetchContent(self, emailId, download_attachment=False):
+    def fetchContent(self, emailId, downloadAttachment=False, overwrite=False):
         '''
             get email content
             return email content with attachment filename
@@ -966,11 +966,13 @@ class IMAPConnect():
             if emailData.get('code') == IMAPConnect.CODE_OK:
                 emailCache = emailData.get('data')
 
-                if emailCache.get('text'):
+                if emailCache.get('text') and not overwrite:
                     outputMessage = emailData
 
                 else:
+                    print('download...')
                     emailCache['text'] = []
+                    emailCache['html'] = []
                     emailCache['attachment'] = []
                     emailCache['inline_attachment'] = []
                     emailCache['id'] = emailId
@@ -980,37 +982,45 @@ class IMAPConnect():
                         data = body.get('data')[0][1]
                         emailMsg = email.message_from_bytes(data)
                         
-                        # check if download_attachment is set
+                        # check if downloadAttachment is set
                         for part in emailMsg.walk():
-                            if part.get('Content-Disposition') and download_attachment:
+                            if part.get('Content-Disposition') and downloadAttachment:
                                 # save attachment
                                 filename = part.get_filename()
-                                fp = open(filename, 'wb')
-                                fp.write(part.get_payload(decode=True))
-                                fp.close()
-                                emailCache.get('attachment').append({'name':filename, 'mime':part.get_content_type()})
+                                if filename:
+                                    fp = open(filename, 'wb')
+                                    fp.write(part.get_payload(decode=True))
+                                    fp.close()
+                                    emailCache.get('attachment').append({'name':filename, 'mime':part.get_content_type()})
                                 
                             # if plain text or html and not disposition
-                            elif part.get_content_type() == 'text/plain' or part.get_content_type() == 'text/html':
+                            elif part.get_content_type() == 'text/plain':
                                 body = part.get_payload(decode=True)
                                 body = body.decode()
                                 emailCache.get('text').append(body)
+
+                            elif part.get_content_type() == 'text/html':
+                                body = part.get_payload(decode=True)
+                                body = body.decode()
+                                emailCache.get('html').append(body)
                                     
                             # else save as inline attachment
-                            elif download_attachment:
+                            elif downloadAttachment:
                                 # save attachment
                                 filename = part.get_filename()
-                                fp = open(cache_dir + os.path.sep + filename, 'wb')
-                                fp.write(part.get_payload(decode=True))
-                                fp.close()
-                                # add attachment filename
-                                emailCache.get('inline_attachment').append({'name':filename, 'mime':part.get_content_type()})
-                                # append inline attachment value to content
-                                emailCache.get('text').append('[pxemail:inline' + filename + ']')
+                                if filename:
+                                    fp = open(dirPath + os.path.sep + filename, 'wb')
+                                    fp.write(part.get_payload(decode=True))
+                                    fp.close()
+                                    # add attachment filename
+                                    emailCache.get('inline_attachment').append({'name':filename, 'mime':part.get_content_type()})
+                                    # append inline attachment value to content
+                                    emailCache.get('text').append('[pxemail:inline' + filename + ']')
                         
                         # make sure content is in text
                         #email_content['content'] = ''.join(email_content.get('content'))
                         emailCache['text'] = ''.join(emailCache.get('text'))
+                        emailCache['html'] = ''.join(emailCache.get('html'))
                         
                         self.serializeEmailToFile(emailCache)
                         outputMessage = self.fetchHeader(emailId)
@@ -1052,7 +1062,7 @@ class MessageFilterBuilder():
             The date must be formatted like 05-Jul-2015.
         '''
         
-        self.__messageFilter.append('BEFORE ' + date)
+        self.__messageFilter.append('BEFORE "{}"'.format(date))
         return self
         
 
@@ -1062,7 +1072,7 @@ class MessageFilterBuilder():
             The date must be formatted like 05-Jul-2015.
         '''
         
-        self.__messageFilter.append('SINCE ' + date)
+        self.__messageFilter.append('SINCE "{}"'.format(date))
         return self
         
 
@@ -1072,7 +1082,7 @@ class MessageFilterBuilder():
             The date must be formatted like 05-Jul-2015.
         '''
         
-        self.__messageFilter.append('ON ' + date)
+        self.__messageFilter.append('ON "{}"'.format(date))
         return self
         
 
@@ -1083,7 +1093,7 @@ class MessageFilterBuilder():
             ex: '"amru rosyada"'
         '''
         
-        self.__messageFilter.append('SUBJECT ' + text)
+        self.__messageFilter.append('SUBJECT "{}"'.format(text))
         return self
         
 
@@ -1094,7 +1104,7 @@ class MessageFilterBuilder():
             ex: '"amru rosyada"'
         '''
         
-        self.__messageFilter.append('BODY ' + text)
+        self.__messageFilter.append('BODY "{}"'.format(text))
         return self
         
 
@@ -1105,7 +1115,7 @@ class MessageFilterBuilder():
             ex: '"amru rosyada"'
         '''
         
-        self.__messageFilter.append('TEXT ' + text)
+        self.__messageFilter.append('TEXT "{}"'.format(text))
         return self
         
 
@@ -1116,7 +1126,7 @@ class MessageFilterBuilder():
             '"amru.rosyada@gmail.com amru.rosyada@hotmail.com"'
         '''
         
-        self.__messageFilter.append('FROM ' + from_addr)
+        self.__messageFilter.append('FROM "{}"'.format(from_addr))
         return self
         
 
@@ -1127,7 +1137,7 @@ class MessageFilterBuilder():
             '"amru.rosyada@gmail.com amru.rosyada@hotmail.com"'
         '''
         
-        self.__messageFilter.append('CC ' + cc_addr)
+        self.__messageFilter.append('CC "{}"'.format(cc_addr))
         return self
         
 
@@ -1138,7 +1148,7 @@ class MessageFilterBuilder():
             '"amru.rosyada@gmail.com amru.rosyada@hotmail.com"'
         '''
         
-        self.__messageFilter.append('BCC ' + bcc_addr)
+        self.__messageFilter.append('BCC "{}"'.format(bcc_addr))
         return self
         
 
@@ -1239,42 +1249,6 @@ class MessageFilterBuilder():
         '''
         
         self.__messageFilter.append('UNFLAGGED')
-        return self
-        
-
-    def larger(self, n_bytes):
-        '''
-            add filter larger than n_bytes
-        '''
-        
-        self.__messageFilter.append('LARGER')
-        return self
-        
-
-    def smaller(self, n_bytes):
-        '''
-            add filter smaller than n_bytes
-        '''
-        
-        self.__messageFilter.append('SMALLER')
-        return self
-        
-
-    def nOt(self, search_key):
-        '''
-            Returns the messages that search-key would not have returned
-        '''
-        
-        self.__messageFilter.append('NOT')
-        return self
-        
-
-    def oR(self, search_key):
-        '''
-            Returns the messages that match either the first or second search-key
-        '''
-        
-        self.__messageFilter.append('OR')
         return self
         
 
