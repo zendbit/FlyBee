@@ -1,3 +1,5 @@
+[Go to Wiki](https://github.com/zenvarlab/FlyBee/wiki)
+
 # FlyBee
 Python microservice framework based on bottle framework, fully compatible with bottle framework.
 
