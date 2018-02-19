@@ -11,6 +11,7 @@ import subprocess
 import sys
 import socket
 import bottle
+import builtins
 
 
 appserverPIDFile = 'appserver.id'
@@ -43,6 +44,18 @@ def readPID():
         print(ex)
 
     return pid
+
+
+# override the builtins function
+# don't print if debug is False
+def overrideBuiltinPrint():
+    _print = print
+
+    def debugPrint(*args, **kwargs):
+        if AppConfig().severOptions().get('debug'):
+            _print(*args, **kwargs)
+            
+    builtins.print = debugPrint
 
 
 def serverStart(kwargs={}):
@@ -88,6 +101,8 @@ def serverStart(kwargs={}):
             s.close()
 
         if not alreadyRun:
+            overrideBuiltinPrint()
+
             if certfile is None or keyfile is None:
                 run(app=app, host=host, port=port, reloader=reloader, debug=debug, server=server, interval=interval)
 
