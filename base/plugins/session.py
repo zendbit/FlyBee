@@ -5,6 +5,7 @@ import os
 import pickle
 import inspect
 from appconfig import AppConfig
+from pickle import Pickler, Unpickler
 
 class Session():
 
@@ -26,23 +27,34 @@ class Session():
 
         loadedData = dict()
 
-        f = open(sessionFile, mode='rb')
+        f = None
         try:
-            loadedData = pickle.load(f)
+            f = open(sessionFile, mode='rb')
+            loadedData = Unpickler(f).load()
 
         except Exception as e:
             print('Warning when read session file %s' % e)
             
-        f.close()
+        finally:
+            if f:
+                f.close()
 
         return loadedData
 
 
     def _writeSessionFile(self, sessionFile, loadedData):
 
-        f = open(sessionFile, mode='wb')
-        pickle.dump(loadedData, f)
-        f.close()
+        f = None
+        try:
+            f = open(sessionFile, mode='wb')
+            Pickler(f, protocol=pickle.HIGHEST_PROTOCOL).dump(loadedData)
+
+        except Exception as e:
+            print('Warning when read session file %s' % e)
+            
+        finally:
+            if f:
+                f.close()
 
 
     def setMaxAge(self, maxAge):
