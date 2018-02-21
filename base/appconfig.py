@@ -19,6 +19,28 @@ class AppConfig():
         ]
 
 
+    def databaseOptions(self):
+
+        return {
+            'sqlite':{
+                'conn1':
+                {
+                    'pragma':['foreign_keys=1', 'case_sensitive_like=1', 'auto_vacuum=1'],
+                    'dbfile':os.path.sep.join((os.getcwd(), 'cached_data', 'sqlite', 'example.db'))
+                }
+            },
+            'mariadb':{
+
+            },
+            'postgre':{
+
+            },
+            'mongodb':{
+
+            }
+        }
+
+
     def imapOptions(self):
 
         return {
@@ -81,7 +103,7 @@ class AppConfig():
         }
 
 
-    def severOptions(self):
+    def serverOptions(self):
         '''
         default server option
         '''

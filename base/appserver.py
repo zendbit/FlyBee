@@ -52,7 +52,7 @@ def overrideBuiltinPrint():
     _print = print
 
     def debugPrint(*args, **kwargs):
-        if AppConfig().severOptions().get('debug'):
+        if AppConfig().serverOptions().get('debug'):
             _print(*args, **kwargs)
             
     builtins.print = debugPrint
@@ -70,7 +70,7 @@ def serverStart(kwargs={}):
     # start system cleaner
     SystemCleaner().startCleaner()
 
-    serverOptions = appConfig.severOptions()
+    serverOptions = appConfig.serverOptions()
     host = serverOptions.get('host') if not kwargs.get('host') else kwargs.get('host')
     port = serverOptions.get('port') if not kwargs.get('port') else kwargs.get('port')
     reloader = serverOptions.get('reloader') if not kwargs.get('reloader') else kwargs.get('reloader')

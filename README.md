@@ -316,7 +316,7 @@ class AppConfig():
         }
 
 
-    def severOptions(self):
+    def serverOptions(self):
         '''
         default server option
         '''
@@ -412,7 +412,7 @@ the default value is one week max age in seconds.
 the serverOptions(self), contain configuration for server the default value is port 8080 but you can changes the value and configure to meet your need.
 
 ```
-def severOptions(self):
+def serverOptions(self):
         '''
         default server option
         '''

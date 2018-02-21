@@ -231,7 +231,7 @@ class SqlBuilder():
 
         for insert multiple values
         sql.insert('users', ('a', 'b'), ((1, '3'), (1, '6'), (1, '8'))).create()
-        => INSERT INTO users (a,b,c) VALUES ((1,2,'yes'),(1,2,'yes'))
+        => INSERT INTO users (a,b,c) VALUES (1,2,'yes'),(1,2,'yes')
         '''
 
         valuesToInsert = ''
@@ -245,7 +245,7 @@ class SqlBuilder():
         else:
             valuesToInsert = ', '.join(['\'{}\''.format(item) if type(item) == str else str(item) for item in values])
 
-        self.__queryBuild.append('INSERT INTO {} ({}) VALUES ({})'.format(table, ', '.join(column), valuesToInsert))
+        self.__queryBuild.append('INSERT INTO {} ({}) VALUES {}'.format(table, ', '.join(column), valuesToInsert))
         return self
 
 
@@ -273,3 +273,4 @@ class SqlBuilder():
 
         self.__queryBuild.append('DELETE FROM {}'.format(table))
         return self
+        
