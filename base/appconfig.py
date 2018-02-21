@@ -99,7 +99,7 @@ class AppConfig():
         
         return {
             'default_max_age':604800,
-            'data_dir':os.path.sep.join((os.getcwd(), 'cached_data', 'session_data'))
+            'data_dir':os.path.sep.join((os.getcwd(), 'cached_data', 'session_data')),
         }
 
 

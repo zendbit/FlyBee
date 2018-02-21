@@ -22,6 +22,13 @@ class Session():
             except Exception as ex:
                 print(ex)
 
+        # initialize session
+        # add default session
+        currentUtcTime = self.__getCurrentUtcTimeHash()
+
+        # init session if not exist
+        request.get_cookie('s', currentUtcTime.get('hexdigest'))
+
 
     def __readSessionFile(self, sessionFile):
 

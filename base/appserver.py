@@ -5,6 +5,7 @@ from shared import Shared
 from appconfig import AppConfig
 from argparse import ArgumentParser
 from plugins.system_cleaner import SystemCleaner
+from plugins.session import Session
 
 import os
 import subprocess
@@ -69,6 +70,9 @@ def serverStart(kwargs={}):
 
     # start system cleaner
     SystemCleaner().startCleaner()
+
+    # init the session
+    Session()
 
     serverOptions = appConfig.serverOptions()
     host = serverOptions.get('host') if not kwargs.get('host') else kwargs.get('host')
