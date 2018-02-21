@@ -221,4 +221,55 @@ class SqlBuilder():
 
         self.__queryBuild.append('RIGHT JOIN {} ON {}'.format(table, rightJoinOn))
         return self
-        
+
+
+    def insert(self, table, column, values):
+        '''
+        sql = SqlBuilder()
+        sql.insert('users', ('a', 'b'), (1, 'yes')).create()
+        => INSERT INTO users (a,b) VALUES (1, 'yes')
+
+        for insert multiple values
+        sql.insert('users', ('a', 'b'), ((1, '3'), (1, '6'), (1, '8'))).create()
+        => INSERT INTO users (a,b,c) VALUES ((1,2,'yes'),(1,2,'yes'))
+        '''
+
+        valuesToInsert = ''
+        if len(values) and type(values[0]) == tuple:
+            valuesList = []
+            for insertValues in values:
+                valuesList.append('({})'.format(', '.join(['\'{}\''.format(item) if type(item) == str else str(item) for item in insertValues])))
+
+            valuesToInsert = ', '.join(valuesList)
+
+        else:
+            valuesToInsert = ', '.join(['\'{}\''.format(item) if type(item) == str else str(item) for item in values])
+
+        self.__queryBuild.append('INSERT INTO {} ({}) VALUES ({})'.format(table, ', '.join(column), valuesToInsert))
+        return self
+
+
+    def update(self, table, column, values):
+        '''
+        sql = SqlBuilder()
+        sql.update('users', ('a', 'b'), (1, 'yes')).create()
+        => UPDATE users SET a = 1, b = 'yes'
+        '''
+
+        updateValues = []
+        for i in range(0, len(column)):
+            updateValues.append('{} = {}'.format(column[i], '\'{}\''.format(values[i]) if type(values[i]) == str else str(values[i])))
+
+        self.__queryBuild.append('UPDATE {} SET {}'.format(table, ', '.join(updateValues)))
+        return self
+
+
+    def delete(self, table):
+        '''
+        sql = SqlBuilder()
+        sql.delete('users').where('uid=1')
+        => DELETE FROM users WHERE uid=1
+        '''
+
+        self.__queryBuild.append('DELETE FROM {}'.format(table))
+        return self

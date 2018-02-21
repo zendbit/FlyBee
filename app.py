@@ -20,7 +20,7 @@ def missingDependency(appname):
     appconfig = getattr(__import__('application.{}.appconfig'.format(appname), fromlist=('AppConfig',)), 'AppConfig')
 
     # default dependency + appconfig dependency
-    deps = ['gevent', 'bottle', 'pip'] + appconfig().appDependency()
+    deps = ['gevent', 'bottle', 'pip', 'transcrypt.__main__'] + appconfig().appDependency()
     for dep in deps.copy():
         spec = find_spec(dep)
         if spec is not None:
@@ -135,7 +135,11 @@ def setupCheck(appname):
             import pip
             for dep in missDeps:
                 print('=> installing {}...'.format(dep))
-                pip.main(['install', dep])
+                if dep.find('transcrypt') != -1:
+                    pip.main(['install', 'transcrypt'])
+
+                else:
+                    pip.main(['install', dep])
 
         print('#')
 
