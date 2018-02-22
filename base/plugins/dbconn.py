@@ -3,6 +3,202 @@ import sqlite3
 import os
 import pymysql
 import pymysql.cursors
+import psycopg2
+import psycopg2.extras
+
+
+####################################
+# postgres connection
+####################################
+class PostgreConn():
+
+    CODE_OK = 'ok'
+    CODE_FAIL = 'fail'
+
+    def __init__(self, config):
+        self.__config = AppConfig().databaseOptions().get('postgre').get(config)
+        self.__host = self.__config.get('host')
+        self.__user = self.__config.get('user')
+        self.__port = self.__config.get('port')
+        self.__password = self.__config.get('password')
+        self.__db = self.__config.get('db')
+        self.__conn = None
+
+
+    def __connect(self):
+        self.__conn = psycopg2.connect(host=self.__host, user=self.__user, password=self.__password, dbname=self.__db, port=self.__port, cursor_factory=psycopg2.extras.DictCursor)
+        return self.__conn.cursor()
+
+
+    def __close(self):
+        if self.__conn:
+            self.__conn.close()
+
+    def execute(self, query):
+        '''
+        execute non return data query, like insert, update, delete data
+        return value:
+        {
+            'code':'ok'|'fail',
+            'message':'success message'|'error message'
+        }
+        '''
+
+        outputMessage = {
+            'code':PostgreConn.CODE_FAIL,
+            'message':None
+        }
+
+        try:
+            cur = self.__connect()
+            cur.execute(query)
+            self.__conn.commit()
+            outputMessage['code'] = PostgreConn.CODE_OK
+            outputMessage['message'] = 'Success executed sql command'
+
+        except Exception as ex:
+            outputMessage['message'] = 'fail executed sql command {}'.format(ex)
+
+        finally:
+            self.__close()
+
+        return outputMessage
+
+
+    def fetchAll(self, query):
+        '''
+        fetch all query data as list of row sqlite object
+        {
+            'code':'ok'|'fail',
+            'message':'success message'|'error message',
+            'data':None|[list of sqlite row object]
+        }
+        '''
+
+        outputMessage = {
+            'code':PostgreConn.CODE_FAIL,
+            'message':None,
+            'data':None
+        }
+
+        try:
+            cur = self.__connect()
+            cur.execute(query)
+            data = cur.fetchall()
+            outputMessage['code'] = PostgreConn.CODE_OK
+            outputMessage['message'] = 'Success executed sql command'
+            outputMessage['data'] = data
+
+        except Exception as ex:
+            outputMessage['message'] = 'fail executed sql command {}'.format(ex)
+
+        finally:
+            self.__close()
+
+        return outputMessage
+
+
+    def fetchOne(self, query):
+        '''
+        fetch one query data as single row sqlite object
+        {
+            'code':'ok'|'fail',
+            'message':'success message'|'error message',
+            'data':None|sqlite row object
+        }
+        '''
+
+        outputMessage = {
+            'code':PostgreConn.CODE_FAIL,
+            'message':None,
+            'data':None
+        }
+
+        try:
+            cur = self.__connect()
+            cur.execute(query)
+            data = cur.fetchone()
+            outputMessage['code'] = PostgreConn.CODE_OK
+            outputMessage['message'] = 'Success executed sql command'
+            outputMessage['data'] = data
+
+        except Exception as ex:
+            outputMessage['message'] = 'fail executed sql command {}'.format(ex)
+
+        finally:
+            self.__close()
+
+        return outputMessage
+
+    
+    def createTable(self, models):
+        """
+        create table that will receive parameter as models of object creation of table
+
+        for example we have the current class of creation table definition:
+
+        the self.createOrder should be ordering of creation table
+
+        class CreateTableExample():
+
+            def __init__(self):
+                self.createOrder = [
+                    'createUsers',
+                    'createAddress'
+                ]
+
+
+            def createUsers(self):
+
+                return '''
+                    CREATE TABLE IF NOT EXISTS Users(
+                        userid INTEGER,
+                        username VARCHAR(255),
+                        PRIMARY KEY (userid, username)
+                    );
+                '''
+
+            def createAddress(self):
+
+                return '''
+                    CREATE TABLE IF NOT EXISTS Address(
+                        uid INTEGER,
+                        uname VARCHAR(255),
+                        addrid INTEGER,
+                        addrname VARCHAR(255),
+                        PRIMARY KEY (addrid),
+                        FOREIGN KEY (uid, uname) REFERENCES Users(userid, username) ON DELETE CASCADE ON UPDATE NO ACTION
+                    );
+                '''
+
+        {
+            'code':'ok'|'fail',
+            'message':'success message'|'error message',
+            'data':None|[list of sqlite row object]
+        }
+
+        with class creation table above we can use as:
+        
+        from plugins.dbconn import PostgreConn
+        conn = PostgreConn('conn1')
+        conn.createTable(CreateTableExample())
+        """
+
+        outputMessage = {
+            'code':PostgreConn.CODE_FAIL,
+            'message':None
+        }
+
+        try:
+            createOrder = getattr(models, 'createOrder')
+            for create in createOrder:
+                exeCreate = getattr(models, create)
+                outputMessage = self.execute(exeCreate())
+
+        except Exception as ex:
+            outputMessage['message'] = 'fail executed create table command {}'.format(ex)
+
+        return outputMessage
 
 
 ####################################
@@ -21,8 +217,6 @@ class MariaDbConn():
         self.__password = self.__config.get('password')
         self.__db = self.__config.get('db')
         self.__conn = None
-        self.__connect()
-        self.__close()
 
 
     def __connect(self):

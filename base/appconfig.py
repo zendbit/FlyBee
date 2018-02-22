@@ -34,7 +34,7 @@ class AppConfig():
                     'port':3306,
                     'user':'root',
                     'password':'',
-                    'db':'test'
+                    'db':''
                 }
             },
             'postgre':{
@@ -43,7 +43,7 @@ class AppConfig():
                     'port':5432,
                     'user':'root',
                     'password':'',
-                    'db':'test'
+                    'db':''
                 }
             },
             'mongodb':{
@@ -52,7 +52,7 @@ class AppConfig():
                     'port':27017,
                     'user':'',
                     'password':'',
-                    'db':'test'
+                    'db':''
                 }
             }
         }
