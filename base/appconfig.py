@@ -23,20 +23,37 @@ class AppConfig():
 
         return {
             'sqlite':{
-                'conn1':
-                {
+                'conn1':{
                     'pragma':['foreign_keys=1', 'case_sensitive_like=1', 'auto_vacuum=1'],
                     'dbfile':os.path.sep.join((os.getcwd(), 'cached_data', 'sqlite', 'example.db'))
                 }
             },
             'mariadb':{
-
+                'conn1':{
+                    'host':'127.0.0.1',
+                    'port':3306,
+                    'user':'root',
+                    'password':'',
+                    'db':'test'
+                }
             },
             'postgre':{
-
+                'conn1':{
+                    'host':'127.0.0.1',
+                    'port':5432,
+                    'user':'root',
+                    'password':'',
+                    'db':'test'
+                }
             },
             'mongodb':{
-
+                'conn1':{
+                    'host':'127.0.0.1',
+                    'port':27017,
+                    'user':'',
+                    'password':'',
+                    'db':'test'
+                }
             }
         }
 
