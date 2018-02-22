@@ -17,13 +17,15 @@ def missingDependency(appname):
     get missing dependency and return list of missing dependency
     '''
 
+    import pip
+
     appconfig = getattr(__import__('application.{}.appconfig'.format(appname), fromlist=('AppConfig',)), 'AppConfig')
 
     # default dependency + appconfig dependency
-    deps = ['gevent', 'bottle', 'pip', 'transcrypt'] + appconfig().appDependency()
+    deps = ['gevent', 'bottle', 'pip', 'transcrypt', 'pymysql', 'psycopg2', 'pymongo'] + appconfig().appDependency()
+    installedDeps = [pkg.key for pkg in pip.get_installed_distributions()]
     for dep in deps.copy():
-        spec = find_spec(dep)
-        if spec is not None:
+        if dep in installedDeps:
             deps.remove(dep)
 
     return deps
@@ -141,8 +143,12 @@ def setupCheck(appname):
                 else:
                     pip.main(['install', dep])
 
-            # updating all depedency
-            pip.main(main['install', 'update'])
+            try:
+                # updating all depedency
+                pip.main(main['install', 'update'])
+
+            except Exception as ex:
+                print(ex)
 
         print('#')
 
