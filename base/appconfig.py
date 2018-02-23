@@ -32,7 +32,7 @@ class AppConfig():
                 'conn1':{
                     'host':'127.0.0.1',
                     'port':3306,
-                    'user':'root',
+                    'user':'',
                     'password':'',
                     'db':''
                 }
@@ -41,7 +41,7 @@ class AppConfig():
                 'conn1':{
                     'host':'127.0.0.1',
                     'port':5432,
-                    'user':'root',
+                    'user':'',
                     'password':'',
                     'db':''
                 }
@@ -52,7 +52,11 @@ class AppConfig():
                     'port':27017,
                     'user':'',
                     'password':'',
-                    'db':''
+                    'ssl':{
+                        'ssl_certfile':None,
+                        'ssl_keyfile':None,
+                        'ssl_pem_passphrase':None
+                    }
                 }
             }
         }

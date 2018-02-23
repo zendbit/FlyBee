@@ -5,6 +5,48 @@ import pymysql
 import pymysql.cursors
 import psycopg2
 import psycopg2.extras
+import pymongo
+
+
+####################################
+# MongoDb connection
+####################################
+class MongoDbConn():
+
+    def __init__(self, config):
+        self.__config = AppConfig().databaseOptions().get('mongodb').get(config)
+        self.__host = self.__config.get('host')
+        self.__user = self.__config.get('user')
+        self.__port = self.__config.get('port')
+        self.__password = self.__config.get('password')
+        self.__sslCertFile = self.__config.get('ssl_certfile')
+        self.__sslKeyFile = self.__config.get('ssl_keyfile')
+        self.__sslPassphrase = self.__config.get('ssl_pem_passphrase')
+        self.__useSsl = False
+
+        if self.__sslCertFile and self.__sslKeyFile:
+            self.__useSsl = True
+
+        self.__conn = None
+
+
+    def connect(self):
+        try:
+            if self.__user != '' and self.__password:
+                self.__conn = pymongo.MongoClient(host=self.__host, port=self.__port, username=self.__user, password=self.__password, ssl=self.__useSsl, ssl_certfile=self.__sslCertFile, ssl_keyfile=self.__sslKeyFile, ssl_pem_passphrase=self.__sslPassphrase)
+
+            else:
+                self.__conn = pymongo.MongoClient(host=self.__host, port=self.__port, ssl=self.__useSsl, ssl_certfile=self.__sslCertFile, ssl_keyfile=self.__sslKeyFile, ssl_pem_passphrase=self.__sslPassphrase)
+
+        except Exception as ex:
+            print(ex)
+
+        return self.__conn
+
+
+    def close(self):
+        if self.__conn:
+            self.__conn.close()
 
 
 ####################################
