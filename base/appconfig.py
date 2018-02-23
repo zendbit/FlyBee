@@ -34,7 +34,16 @@ class AppConfig():
                     'port':3306,
                     'user':'',
                     'password':'',
-                    'db':''
+                    'db':'',
+                    # see mysql_ssl_set() mysql documentation
+                    # ssl conn
+                    'ssl':{
+                        'ca':None, # not require cert and key
+                        'capath':None,
+                        'cert':None,
+                        'key':None,
+                        'cipher':None
+                    }
                 }
             },
             'postgre':{
@@ -43,7 +52,13 @@ class AppConfig():
                     'port':5432,
                     'user':'',
                     'password':'',
-                    'db':''
+                    'db':'',
+                    # ssl conn
+                    'ssl':{
+                        'sslrootcert':None, # not required sslcert and sslkey
+                        'sslcert':None,
+                        'sslkey':None
+                    }
                 }
             },
             'mongodb':{
@@ -52,6 +67,7 @@ class AppConfig():
                     'port':27017,
                     'user':'',
                     'password':'',
+                    # ssl conn
                     'ssl':{
                         'ssl_certfile':None,
                         'ssl_keyfile':None,

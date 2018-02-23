@@ -64,11 +64,25 @@ class PostgreConn():
         self.__port = self.__config.get('port')
         self.__password = self.__config.get('password')
         self.__db = self.__config.get('db')
+        self.__sslMode = 'disable'
+        self.__sslrootcert = None
+        self.__sslcert = None
+        self.__sslkey = None
+
+        ssl = self.__config.get('ssl')
+        if ssl:
+            self.__sslrootcert = ssl.get('sslrootcert')
+            self.__sslcert = ssl.get('sslcert')
+            self.__sslkey = ssl.get('sslkey')
+
+            if self.__sslrootcert or self.__sslcert or self.__sslkey:
+                self.__sslMode = 'verify-full'
+
         self.__conn = None
 
 
     def __connect(self):
-        self.__conn = psycopg2.connect(host=self.__host, user=self.__user, password=self.__password, dbname=self.__db, port=self.__port, cursor_factory=psycopg2.extras.DictCursor)
+        self.__conn = psycopg2.connect(host=self.__host, user=self.__user, password=self.__password, dbname=self.__db, port=self.__port, cursor_factory=psycopg2.extras.DictCursor, sslmode=self.__sslMode, sslrootcert=self.__sslrootcert, sslcert=self.__sslcert, sslkey=self.__sslkey)
         return self.__conn.cursor()
 
 
@@ -258,11 +272,19 @@ class MariaDbConn():
         self.__port = self.__config.get('port')
         self.__password = self.__config.get('password')
         self.__db = self.__config.get('db')
+        self.__ssl = {}
+
+        ssl = self.__config.get('ssl')
+        if ssl:
+            for sslcert in ssl:
+                if ssl.get(sslcert):
+                    self.__ssl[sslcert] = ssl.ge(sslcert)
+
         self.__conn = None
 
 
     def __connect(self):
-        self.__conn = pymysql.connect(host=self.__host, user=self.__user, password=self.__password, db=self.__db, port=self.__port, cursorclass=pymysql.cursors.DictCursor)
+        self.__conn = pymysql.connect(host=self.__host, user=self.__user, password=self.__password, db=self.__db, port=self.__port, cursorclass=pymysql.cursors.DictCursor, ssl=self.__ssl)
         return self.__conn.cursor()
 
 
