@@ -98,8 +98,8 @@ def serverStart(kwargs={}):
 
             # if in debug mode try kill the server and force alradyRun to false
             if reloader and debug:
-                serverStop(kwargs)
-                alreadyRun = False
+                if serverStop(kwargs) == 0:
+                    alreadyRun = False
 
         finally:
             s.close()
@@ -113,11 +113,18 @@ def serverStart(kwargs={}):
             else:
                 run(app=app, host=host, port=port, reloader=reloader, debug=debug, server=server, interval=interval, certfile=certfile, keyfile=keyfile)
 
+        else:
+            print('----------')
+            print('| server already running or address already in used {}:{} |'.format(host, port))
+            print('----------')
+
+
     else:
         print('''You don't have write access to {}, need read write access!'''.format(os.getcwd()))
 
 
 def serverStop(kwargs={}):
+    returnCode = 0
     pids = readPID()
 
     if pids and pids.strip() != '':
@@ -129,12 +136,15 @@ def serverStop(kwargs={}):
             calloutput = subprocess.run('''kill -9 {}'''.format(pids), shell=True, stdout=subprocess.PIPE)
             
         print(calloutput)
+        returnCode = calloutput.returncode
 
         if calloutput and calloutput.returncode == 0:
             try:
                 os.remove('appserver.id')   
             except Exception as ex:
                 print(ex)
+
+    return returnCode
 
 
 if __name__ == '__main__':
