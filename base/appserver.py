@@ -131,9 +131,9 @@ def serverStop(kwargs={}):
         calloutput = None
 
         if sys.platform.find('win') == 0:
-            calloutput = subprocess.run('''taskkill /F /PID {}'''.format(pids), shell=True)
+            calloutput = subprocess.run('''taskkill /F /PID {}'''.format(pids), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env={'LANG':'C'})
         else:
-            calloutput = subprocess.run('''kill -9 {}'''.format(pids), shell=True, stdout=subprocess.PIPE)
+            calloutput = subprocess.run('''kill -9 {}'''.format(pids), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env={'LANG':'C'})
             
         print(calloutput)
         returnCode = calloutput.returncode

@@ -85,10 +85,10 @@ def startServer(args):
     appDir = os.path.sep.join((os.getcwd(), 'application', args.start))
 
     if sys.platform.find('win') == 0:
-        calloutput = subprocess.run('pushd {} && START /B CMD /C CALL {} appserver.py -s start {}'.format(appDir, sys.executable, ' '.join(param)), shell=True)
+        calloutput = subprocess.run('pushd {} && START /B CMD /C CALL {} appserver.py -s start {}'.format(appDir, sys.executable, ' '.join(param)), shell=True, env={'LANG':'C'})
 
     else:
-        calloutput = subprocess.run('cd {} && {} appserver.py -s start {} &'.format(appDir, sys.executable, ' '.join(param)), shell=True)
+        calloutput = subprocess.run('cd {} && {} appserver.py -s start {} &'.format(appDir, sys.executable, ' '.join(param)), shell=True, env={'LANG':'C'})
 
     print(calloutput)
 
@@ -101,10 +101,10 @@ def stopServer(args):
     appDir = os.path.sep.join((os.getcwd(), 'application', args.stop))
 
     if sys.platform.find('win') == 0:
-        subprocess.run('pushd {} && {} appserver.py -s stop'.format(appDir, sys.executable), shell=True)
+        subprocess.run('pushd {} && {} appserver.py -s stop'.format(appDir, sys.executable), shell=True, env={'LANG':'C'})
 
     else:
-        subprocess.run('cd {} && {} appserver.py -s stop'.format(appDir, sys.executable), shell=True)
+        subprocess.run('cd {} && {} appserver.py -s stop'.format(appDir, sys.executable), shell=True, env={'LANG':'C'})
 
 
 def setupCheck(appname):
@@ -126,7 +126,7 @@ def setupCheck(appname):
             missDeps.index('pip')
             print('=> installing pip from {}...'.format('https://bootstrap.pypa.io/get-pip.py'))
             urllib.request.urlretrieve('https://bootstrap.pypa.io/get-pip.py', 'get-pip.py')
-            calloutput = subprocess.run('{} get-pip.py'.format(sys.executable), shell=True)
+            calloutput = subprocess.run('{} get-pip.py'.format(sys.executable), shell=True, env={'LANG':'C'})
             os.remove('get-pip.py')
 
         except ValueError:
