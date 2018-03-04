@@ -1,7 +1,7 @@
 class SqlBuilder():
 
     def __init__(self):
-        self.__queryBuild = []
+        self._queryBuild = []
 
 
     def select(self, selectWhat):
@@ -10,7 +10,7 @@ class SqlBuilder():
         select('pid, user_id, user_name')
         '''
 
-        self.__queryBuild.append('SELECT {}'.format(selectWhat))
+        self._queryBuild.append('SELECT {}'.format(selectWhat))
         return self
 
 
@@ -20,7 +20,7 @@ class SqlBuilder():
         select('pid, user_id, user_name')
         '''
 
-        self.__queryBuild.append('SELECT DISTINCT {}'.format(selectWhat))
+        self._queryBuild.append('SELECT DISTINCT {}'.format(selectWhat))
         return self
 
 
@@ -34,7 +34,7 @@ class SqlBuilder():
         => SELECT pid, user_id, user_name FROM users
         '''
 
-        self.__queryBuild.append('FROM {}'.format(table))
+        self._queryBuild.append('FROM {}'.format(table))
         return self
 
 
@@ -46,8 +46,8 @@ class SqlBuilder():
         will return sql string and will flush and clear the sqlbuilder object
         '''
 
-        query = ' '.join(self.__queryBuild)
-        self.__queryBuild.clear()
+        query = ' '.join(self._queryBuild)
+        self._queryBuild.clear()
         return query
 
 
@@ -58,7 +58,7 @@ class SqlBuilder():
         => SELECT * FROM users WHERE users.id=1
         '''
 
-        self.__queryBuild.append('WHERE {}'.format(where))
+        self._queryBuild.append('WHERE {}'.format(where))
         return self
 
 
@@ -69,7 +69,7 @@ class SqlBuilder():
         => SELECT * FROM users WHERE users.id=1 AND name='amru'
         '''
 
-        self.__queryBuild.append('AND {}'.format(andWhere))
+        self._queryBuild.append('AND {}'.format(andWhere))
         return self
 
 
@@ -80,7 +80,7 @@ class SqlBuilder():
         => SELECT * FROM users WHERE users.id=1 OR name='amru'
         '''
 
-        self.__queryBuild.append('OR {}'.format(orWhere))
+        self._queryBuild.append('OR {}'.format(orWhere))
         return self
 
 
@@ -92,7 +92,7 @@ class SqlBuilder():
         => SELECT * FROM users WHERE users.id IN (SELECT job.uid FROM job WHERE job.id=1)
         '''
 
-        self.__queryBuild.append('IN ({})'.format(inSelect))
+        self._queryBuild.append('IN ({})'.format(inSelect))
         return self
 
 
@@ -104,7 +104,7 @@ class SqlBuilder():
         => SELECT * FROM users WHERE users.id IN (SELECT job.uid FROM job WHERE job.name LIKE 'ngetik')
         '''
 
-        self.__queryBuild.append('LIKE {}'.format(like))
+        self._queryBuild.append('LIKE {}'.format(like))
         return self
 
 
@@ -116,7 +116,7 @@ class SqlBuilder():
         => SELECT * FROM users WHERE users.id IN (SELECT job.uid FROM job WHERE job.name NOT LIKE 'ngetik')
         '''
 
-        self.__queryBuild.append('NOT LIKE {}'.format(notLike))
+        self._queryBuild.append('NOT LIKE {}'.format(notLike))
         return self
 
 
@@ -128,7 +128,7 @@ class SqlBuilder():
         => SELECT * FROM users WHERE users.id IN (SELECT job.uid FROM job WHERE job.name NOT LIKE 'ngetik') ORDER BY sers.name, users.id DESC
         '''
 
-        self.__queryBuild.append('ORDER BY {} DESC'.format(orderBy))
+        self._queryBuild.append('ORDER BY {} DESC'.format(orderBy))
         return self
 
     
@@ -140,7 +140,7 @@ class SqlBuilder():
         => SELECT * FROM users WHERE users.id IN (SELECT job.uid FROM job WHERE job.name NOT LIKE 'ngetik') ORDER BY sers.name, users.id ASC
         '''
 
-        self.__queryBuild.append('ORDER BY {} ASC'.format(orderBy))
+        self._queryBuild.append('ORDER BY {} ASC'.format(orderBy))
         return self
 
 
@@ -152,7 +152,7 @@ class SqlBuilder():
         => SELECT * FROM users WHERE users.id IN (SELECT job.uid FROM job WHERE job.name NOT LIKE 'ngetik') ORDER BY sers.name, users.id ASC LIMIT 1
         '''
 
-        self.__queryBuild.append('LIMIT {}'.format(limit))
+        self._queryBuild.append('LIMIT {}'.format(limit))
         return self
 
 
@@ -164,7 +164,7 @@ class SqlBuilder():
         => SELECT * FROM users WHERE users.id IN (SELECT job.uid FROM job WHERE job.name NOT LIKE 'ngetik') ORDER BY sers.name, users.id ASC LIMIT 1 OFFSET 0
         '''
 
-        self.__queryBuild.append('LIMIT {} OFFSET {}'.format(limit, offset))
+        self._queryBuild.append('LIMIT {} OFFSET {}'.format(limit, offset))
         return self
 
 
@@ -175,7 +175,7 @@ class SqlBuilder():
         => SELECT COUNT(job.uid) AS total_job FROM job GROUP BY job.uid
         '''
 
-        self.__queryBuild.append('GROUP BY {}'.format(groupBy))
+        self._queryBuild.append('GROUP BY {}'.format(groupBy))
         return self
 
 
@@ -186,7 +186,7 @@ class SqlBuilder():
         => SELECT users.name, job.name, users.id FROM job INNER JOIN users ON users.id=job.uid
         '''
 
-        self.__queryBuild.append('INNER JOIN {} ON {}'.format(table, innerJoinOn))
+        self._queryBuild.append('INNER JOIN {} ON {}'.format(table, innerJoinOn))
         return self
 
 
@@ -197,7 +197,7 @@ class SqlBuilder():
         => SELECT users.name, job.name, users.id FROM job JOIN users ON users.id=job.uid
         '''
 
-        self.__queryBuild.append('JOIN {} ON {}'.format(table, joinOn))
+        self._queryBuild.append('JOIN {} ON {}'.format(table, joinOn))
         return self
 
 
@@ -208,7 +208,7 @@ class SqlBuilder():
         => SELECT users.name, job.name, users.id FROM job LEFT JOIN users ON users.id=job.uid
         '''
 
-        self.__queryBuild.append('LEFT JOIN {} ON {}'.format(table, leftJoinOn))
+        self._queryBuild.append('LEFT JOIN {} ON {}'.format(table, leftJoinOn))
         return self
 
 
@@ -219,7 +219,7 @@ class SqlBuilder():
         => SELECT users.name, job.name, users.id FROM job RIGHT JOIN users ON users.id=job.uid
         '''
 
-        self.__queryBuild.append('RIGHT JOIN {} ON {}'.format(table, rightJoinOn))
+        self._queryBuild.append('RIGHT JOIN {} ON {}'.format(table, rightJoinOn))
         return self
 
 
@@ -245,7 +245,7 @@ class SqlBuilder():
         else:
             valuesToInsert = ', '.join(['\'{}\''.format(item) if type(item) == str else str(item) for item in values])
 
-        self.__queryBuild.append('INSERT INTO {} ({}) VALUES {}'.format(table, ', '.join(column), valuesToInsert))
+        self._queryBuild.append('INSERT INTO {} ({}) VALUES {}'.format(table, ', '.join(column), valuesToInsert))
         return self
 
 
@@ -260,7 +260,7 @@ class SqlBuilder():
         for i in range(0, len(column)):
             updateValues.append('{} = {}'.format(column[i], '\'{}\''.format(values[i]) if type(values[i]) == str else str(values[i])))
 
-        self.__queryBuild.append('UPDATE {} SET {}'.format(table, ', '.join(updateValues)))
+        self._queryBuild.append('UPDATE {} SET {}'.format(table, ', '.join(updateValues)))
         return self
 
 
@@ -271,6 +271,6 @@ class SqlBuilder():
         => DELETE FROM users WHERE uid=1
         '''
 
-        self.__queryBuild.append('DELETE FROM {}'.format(table))
+        self._queryBuild.append('DELETE FROM {}'.format(table))
         return self
         

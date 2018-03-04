@@ -14,39 +14,39 @@ import pymongo
 class MongoDbConn():
 
     def __init__(self, config):
-        self.__config = AppConfig().databaseOptions().get('mongodb').get(config)
-        self.__host = self.__config.get('host')
-        self.__user = self.__config.get('user')
-        self.__port = self.__config.get('port')
-        self.__password = self.__config.get('password')
-        self.__sslCertFile = self.__config.get('ssl_certfile')
-        self.__sslKeyFile = self.__config.get('ssl_keyfile')
-        self.__sslPassphrase = self.__config.get('ssl_pem_passphrase')
-        self.__useSsl = False
+        self._config = AppConfig().databaseOptions().get('mongodb').get(config)
+        self._host = self._config.get('host')
+        self._user = self._config.get('user')
+        self._port = self._config.get('port')
+        self._password = self._config.get('password')
+        self._sslCertFile = self._config.get('ssl_certfile')
+        self._sslKeyFile = self._config.get('ssl_keyfile')
+        self._sslPassphrase = self._config.get('ssl_pem_passphrase')
+        self._useSsl = False
 
-        if self.__sslCertFile and self.__sslKeyFile:
-            self.__useSsl = True
+        if self._sslCertFile and self._sslKeyFile:
+            self._useSsl = True
 
-        self.__conn = None
+        self._conn = None
 
 
     def connect(self):
         try:
-            if self.__user != '' and self.__password:
-                self.__conn = pymongo.MongoClient(host=self.__host, port=self.__port, username=self.__user, password=self.__password, ssl=self.__useSsl, ssl_certfile=self.__sslCertFile, ssl_keyfile=self.__sslKeyFile, ssl_pem_passphrase=self.__sslPassphrase)
+            if self._user != '' and self._password:
+                self._conn = pymongo.MongoClient(host=self._host, port=self._port, username=self._user, password=self._password, ssl=self._useSsl, ssl_certfile=self._sslCertFile, ssl_keyfile=self._sslKeyFile, ssl_pem_passphrase=self._sslPassphrase)
 
             else:
-                self.__conn = pymongo.MongoClient(host=self.__host, port=self.__port, ssl=self.__useSsl, ssl_certfile=self.__sslCertFile, ssl_keyfile=self.__sslKeyFile, ssl_pem_passphrase=self.__sslPassphrase)
+                self._conn = pymongo.MongoClient(host=self._host, port=self._port, ssl=self._useSsl, ssl_certfile=self._sslCertFile, ssl_keyfile=self._sslKeyFile, ssl_pem_passphrase=self._sslPassphrase)
 
         except Exception as ex:
             print(ex)
 
-        return self.__conn
+        return self._conn
 
 
     def close(self):
-        if self.__conn:
-            self.__conn.close()
+        if self._conn:
+            self._conn.close()
 
 
 ####################################
@@ -58,37 +58,37 @@ class PostgreConn():
     CODE_FAIL = 'fail'
 
     def __init__(self, config):
-        self.__config = AppConfig().databaseOptions().get('postgre').get(config)
-        self.__host = self.__config.get('host')
-        self.__user = self.__config.get('user')
-        self.__port = self.__config.get('port')
-        self.__password = self.__config.get('password')
-        self.__db = self.__config.get('db')
-        self.__sslMode = 'disable'
-        self.__sslrootcert = None
-        self.__sslcert = None
-        self.__sslkey = None
+        self._config = AppConfig().databaseOptions().get('postgre').get(config)
+        self._host = self._config.get('host')
+        self._user = self._config.get('user')
+        self._port = self._config.get('port')
+        self._password = self._config.get('password')
+        self._db = self._config.get('db')
+        self._sslMode = 'disable'
+        self._sslrootcert = None
+        self._sslcert = None
+        self._sslkey = None
 
-        ssl = self.__config.get('ssl')
+        ssl = self._config.get('ssl')
         if ssl:
-            self.__sslrootcert = ssl.get('sslrootcert')
-            self.__sslcert = ssl.get('sslcert')
-            self.__sslkey = ssl.get('sslkey')
+            self._sslrootcert = ssl.get('sslrootcert')
+            self._sslcert = ssl.get('sslcert')
+            self._sslkey = ssl.get('sslkey')
 
-            if self.__sslrootcert or self.__sslcert or self.__sslkey:
-                self.__sslMode = 'verify-full'
+            if self._sslrootcert or self._sslcert or self._sslkey:
+                self._sslMode = 'verify-full'
 
-        self.__conn = None
-
-
-    def __connect(self):
-        self.__conn = psycopg2.connect(host=self.__host, user=self.__user, password=self.__password, dbname=self.__db, port=self.__port, cursor_factory=psycopg2.extras.DictCursor, sslmode=self.__sslMode, sslrootcert=self.__sslrootcert, sslcert=self.__sslcert, sslkey=self.__sslkey)
-        return self.__conn.cursor()
+        self._conn = None
 
 
-    def __close(self):
-        if self.__conn:
-            self.__conn.close()
+    def _connect(self):
+        self._conn = psycopg2.connect(host=self._host, user=self._user, password=self._password, dbname=self._db, port=self._port, cursor_factory=psycopg2.extras.DictCursor, sslmode=self._sslMode, sslrootcert=self._sslrootcert, sslcert=self._sslcert, sslkey=self._sslkey)
+        return self._conn.cursor()
+
+
+    def _close(self):
+        if self._conn:
+            self._conn.close()
 
     def execute(self, query):
         '''
@@ -106,9 +106,9 @@ class PostgreConn():
         }
 
         try:
-            cur = self.__connect()
+            cur = self._connect()
             cur.execute(query)
-            self.__conn.commit()
+            self._conn.commit()
             outputMessage['code'] = PostgreConn.CODE_OK
             outputMessage['message'] = 'Success executed sql command'
 
@@ -116,7 +116,7 @@ class PostgreConn():
             outputMessage['message'] = 'fail executed sql command {}'.format(ex)
 
         finally:
-            self.__close()
+            self._close()
 
         return outputMessage
 
@@ -138,7 +138,7 @@ class PostgreConn():
         }
 
         try:
-            cur = self.__connect()
+            cur = self._connect()
             cur.execute(query)
             data = cur.fetchall()
             outputMessage['code'] = PostgreConn.CODE_OK
@@ -149,7 +149,7 @@ class PostgreConn():
             outputMessage['message'] = 'fail executed sql command {}'.format(ex)
 
         finally:
-            self.__close()
+            self._close()
 
         return outputMessage
 
@@ -171,7 +171,7 @@ class PostgreConn():
         }
 
         try:
-            cur = self.__connect()
+            cur = self._connect()
             cur.execute(query)
             data = cur.fetchone()
             outputMessage['code'] = PostgreConn.CODE_OK
@@ -182,7 +182,7 @@ class PostgreConn():
             outputMessage['message'] = 'fail executed sql command {}'.format(ex)
 
         finally:
-            self.__close()
+            self._close()
 
         return outputMessage
 
@@ -266,31 +266,31 @@ class MariaDbConn():
     CODE_FAIL = 'fail'
 
     def __init__(self, config):
-        self.__config = AppConfig().databaseOptions().get('mariadb').get(config)
-        self.__host = self.__config.get('host')
-        self.__user = self.__config.get('user')
-        self.__port = self.__config.get('port')
-        self.__password = self.__config.get('password')
-        self.__db = self.__config.get('db')
-        self.__ssl = {}
+        self._config = AppConfig().databaseOptions().get('mariadb').get(config)
+        self._host = self._config.get('host')
+        self._user = self._config.get('user')
+        self._port = self._config.get('port')
+        self._password = self._config.get('password')
+        self._db = self._config.get('db')
+        self._ssl = {}
 
-        ssl = self.__config.get('ssl')
+        ssl = self._config.get('ssl')
         if ssl:
             for sslcert in ssl:
                 if ssl.get(sslcert):
-                    self.__ssl[sslcert] = ssl.ge(sslcert)
+                    self._ssl[sslcert] = ssl.ge(sslcert)
 
-        self.__conn = None
-
-
-    def __connect(self):
-        self.__conn = pymysql.connect(host=self.__host, user=self.__user, password=self.__password, db=self.__db, port=self.__port, cursorclass=pymysql.cursors.DictCursor, ssl=self.__ssl)
-        return self.__conn.cursor()
+        self._conn = None
 
 
-    def __close(self):
-        if self.__conn:
-            self.__conn.close()
+    def _connect(self):
+        self._conn = pymysql.connect(host=self._host, user=self._user, password=self._password, db=self._db, port=self._port, cursorclass=pymysql.cursors.DictCursor, ssl=self._ssl)
+        return self._conn.cursor()
+
+
+    def _close(self):
+        if self._conn:
+            self._conn.close()
 
     def execute(self, query):
         '''
@@ -308,9 +308,9 @@ class MariaDbConn():
         }
 
         try:
-            cur = self.__connect()
+            cur = self._connect()
             cur.execute(query)
-            self.__conn.commit()
+            self._conn.commit()
             outputMessage['code'] = MariaDbConn.CODE_OK
             outputMessage['message'] = 'Success executed sql command'
 
@@ -318,7 +318,7 @@ class MariaDbConn():
             outputMessage['message'] = 'fail executed sql command {}'.format(ex)
 
         finally:
-            self.__close()
+            self._close()
 
         return outputMessage
 
@@ -340,7 +340,7 @@ class MariaDbConn():
         }
 
         try:
-            cur = self.__connect()
+            cur = self._connect()
             cur.execute(query)
             data = cur.fetchall()
             outputMessage['code'] = MariaDbConn.CODE_OK
@@ -351,7 +351,7 @@ class MariaDbConn():
             outputMessage['message'] = 'fail executed sql command {}'.format(ex)
 
         finally:
-            self.__close()
+            self._close()
 
         return outputMessage
 
@@ -373,7 +373,7 @@ class MariaDbConn():
         }
 
         try:
-            cur = self.__connect()
+            cur = self._connect()
             cur.execute(query)
             data = cur.fetchone()
             outputMessage['code'] = MariaDbConn.CODE_OK
@@ -384,7 +384,7 @@ class MariaDbConn():
             outputMessage['message'] = 'fail executed sql command {}'.format(ex)
 
         finally:
-            self.__close()
+            self._close()
 
         return outputMessage
 
@@ -503,31 +503,31 @@ class SqliteConn():
 
     def __init__(self, config):
 
-        self.__config = AppConfig().databaseOptions().get('sqlite').get(config)
-        self.__dbfile = self.__config.get('dbfile')
-        self.__pragma = self.__config.get('pragma')
-        self.__conn = None
+        self._config = AppConfig().databaseOptions().get('sqlite').get(config)
+        self._dbfile = self._config.get('dbfile')
+        self._pragma = self._config.get('pragma')
+        self._conn = None
 
         # init data dir if not exists
-        dataDir = os.path.sep.join(self.__dbfile.split(os.path.sep)[:-1])
+        dataDir = os.path.sep.join(self._dbfile.split(os.path.sep)[:-1])
         os.makedirs(dataDir, exist_ok=True)
 
 
-    def __connect(self):
+    def _connect(self):
         # connect to sqlite file
-        self.__conn = sqlite3.connect(self.__dbfile)
-        self.__conn.row_factory = sqlite3.Row
-        return self.__conn.cursor()
+        self._conn = sqlite3.connect(self._dbfile)
+        self._conn.row_factory = sqlite3.Row
+        return self._conn.cursor()
 
 
-    def __close(self):
-        if self.__conn:
-            self.__conn.close()
+    def _close(self):
+        if self._conn:
+            self._conn.close()
 
-    def __executePragma(self, cur):
-        if self.__pragma and len(self.__pragma):
-            cur.executescript(';'.join(['PRAGMA {}'.format(pragma) for pragma in self.__pragma]))
-            self.__conn.commit()
+    def _executePragma(self, cur):
+        if self._pragma and len(self._pragma):
+            cur.executescript(';'.join(['PRAGMA {}'.format(pragma) for pragma in self._pragma]))
+            self._conn.commit()
 
 
     def execute(self, query):
@@ -546,10 +546,10 @@ class SqliteConn():
         }
 
         try:
-            cur = self.__connect()
-            self.__executePragma(cur)
+            cur = self._connect()
+            self._executePragma(cur)
             cur.execute(query)
-            self.__conn.commit()
+            self._conn.commit()
             outputMessage['code'] = SqliteConn.CODE_OK
             outputMessage['message'] = 'Success executed sql command'
 
@@ -557,7 +557,7 @@ class SqliteConn():
             outputMessage['message'] = 'fail executed sql command {}'.format(ex)
 
         finally:
-            self.__close()
+            self._close()
 
         return outputMessage
 
@@ -579,8 +579,8 @@ class SqliteConn():
         }
 
         try:
-            cur = self.__connect()
-            self.__executePragma(cur)
+            cur = self._connect()
+            self._executePragma(cur)
             cur.execute(query)
             data = cur.fetchall()
             outputMessage['code'] = SqliteConn.CODE_OK
@@ -591,7 +591,7 @@ class SqliteConn():
             outputMessage['message'] = 'fail executed sql command {}'.format(ex)
 
         finally:
-            self.__close()
+            self._close()
 
         return outputMessage
 
@@ -613,8 +613,8 @@ class SqliteConn():
         }
 
         try:
-            cur = self.__connect()
-            self.__executePragma(cur)
+            cur = self._connect()
+            self._executePragma(cur)
             cur.execute(query)
             data = cur.fetchone()
             outputMessage['code'] = SqliteConn.CODE_OK
@@ -625,7 +625,7 @@ class SqliteConn():
             outputMessage['message'] = 'fail executed sql command {}'.format(ex)
 
         finally:
-            self.__close()
+            self._close()
 
         return outputMessage
 

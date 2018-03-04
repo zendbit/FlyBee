@@ -11,10 +11,10 @@ class Session():
 
     def __init__(self):
 
-        self.__sessionOption = AppConfig().sessionOptions()
+        self._sessionOption = AppConfig().sessionOptions()
 
         # check if folder not exist then create the data dir
-        dataDir = self.__sessionOption.get('data_dir')
+        dataDir = self._sessionOption.get('data_dir')
         if dataDir and not os.path.isdir(dataDir):
             try:
                 os.makedirs(dataDir)
@@ -24,13 +24,13 @@ class Session():
 
         # initialize session
         # add default session
-        currentUtcTime = self.__getCurrentUtcTimeHash()
+        currentUtcTime = self._getCurrentUtcTimeHash()
 
         # init session if not exist
         request.get_cookie('s', currentUtcTime.get('hexdigest'))
 
 
-    def __readSessionFile(self, sessionFile):
+    def _readSessionFile(self, sessionFile):
 
         loadedData = dict()
 
@@ -71,17 +71,17 @@ class Session():
         set max age of the session
         '''
         try:
-            currentUtcTime = self.__getCurrentUtcTimeHash()
+            currentUtcTime = self._getCurrentUtcTimeHash()
 
             # get cookie from current request if not exist just add it
             cookieSessionData = request.get_cookie('s', currentUtcTime.get('hexdigest'))
 
             # create session file
-            if os.path.isdir(self.__sessionOption.get('data_dir')):
-                sessionFile = os.path.join(self.__sessionOption.get('data_dir'), cookieSessionData)
+            if os.path.isdir(self._sessionOption.get('data_dir')):
+                sessionFile = os.path.join(self._sessionOption.get('data_dir'), cookieSessionData)
 
                 if os.path.isfile(sessionFile):
-                    loadedData = self.__readSessionFile(sessionFile)
+                    loadedData = self._readSessionFile(sessionFile)
 
                     # set max ages for current session
                     if isinstance(loadedData, dict):
@@ -95,7 +95,7 @@ class Session():
             print (e)
 
 
-    def __getCurrentUtcTimeHash(self):
+    def _getCurrentUtcTimeHash(self):
 
         utcdt = datetime.datetime.utcnow().isoformat()
         mdsHash = md5(utcdt.encode('utf-8'))
@@ -112,21 +112,21 @@ class Session():
         add value to session, if key already exist will update the last value
         '''
         try:
-            currentUtcTime = self.__getCurrentUtcTimeHash()
+            currentUtcTime = self._getCurrentUtcTimeHash()
 
             # get cookie from current request if not exist just add it
             cookieSessionData = request.get_cookie('s', currentUtcTime.get('hexdigest'))
 
             # create session file
-            if os.path.isdir(self.__sessionOption.get('data_dir')):
-                sessionFile = os.path.join(self.__sessionOption.get('data_dir'), cookieSessionData)
+            if os.path.isdir(self._sessionOption.get('data_dir')):
+                sessionFile = os.path.join(self._sessionOption.get('data_dir'), cookieSessionData)
 
                 isNotNewSession = os.path.isfile(sessionFile)
 
                 loadedData = dict()
 
                 if isNotNewSession:
-                    loadedData = self.__readSessionFile(sessionFile)
+                    loadedData = self._readSessionFile(sessionFile)
 
                 if isinstance(loadedData, dict):
                     loadedData[key] = value
@@ -134,7 +134,7 @@ class Session():
                     # if default max_ages None set default to 30 days 2592000 seconds
                     # if max ages is not defined ye then add to session data and cookies data
                     if (loadedData.get('max_age') is None):
-                        loadedData['max_age'] = self.__sessionOption.get('default_max_age')
+                        loadedData['max_age'] = self._sessionOption.get('default_max_age')
 
                     # add created date if not exist in the data
                     if (loadedData.get('date_created') is None):
@@ -144,13 +144,13 @@ class Session():
 
                 # set default max age if new
                 if (not isNotNewSession):
-                    response.set_cookie('s', cookieSessionData, max_age=self.__sessionOption.get('default_max_age'))
+                    response.set_cookie('s', cookieSessionData, max_age=self._sessionOption.get('default_max_age'))
 
                 else:
                     response.set_cookie('s', cookieSessionData)
 
             else:
-                raise Exception('Session dir is not exist %s' % self.__sessionOption.get('data_dir'))
+                raise Exception('Session dir is not exist %s' % self._sessionOption.get('data_dir'))
 
         except Exception as e:
             print(e)
@@ -163,14 +163,14 @@ class Session():
         clear all instance of session
         '''
         try:
-            currentUtcTime = self.__getCurrentUtcTimeHash()
+            currentUtcTime = self._getCurrentUtcTimeHash()
 
             # get cookie from current request if not exist just add it
             cookieSessionData = request.get_cookie('s', currentUtcTime.get('hexdigest'))
 
             # create session file
-            if os.path.isdir(self.__sessionOption.get('data_dir')):
-                sessionFile = os.path.join(self.__sessionOption.get('data_dir'), cookieSessionData)
+            if os.path.isdir(self._sessionOption.get('data_dir')):
+                sessionFile = os.path.join(self._sessionOption.get('data_dir'), cookieSessionData)
 
                 if (os.path.isfile(sessionFile)):
                     os.remove(sessionFile)
@@ -190,21 +190,21 @@ class Session():
         '''
         sessionData = None
         try:
-            currentUtcTime = self.__getCurrentUtcTimeHash()
+            currentUtcTime = self._getCurrentUtcTimeHash()
 
             # get cookie from current request if not exist just add it
             cookieSessionData = request.get_cookie('s', currentUtcTime.get('hexdigest'))
 
             # create session file
-            if os.path.isdir(self.__sessionOption.get('data_dir')):
-                sessionFile = os.path.join(self.__sessionOption.get('data_dir'), cookieSessionData)
+            if os.path.isdir(self._sessionOption.get('data_dir')):
+                sessionFile = os.path.join(self._sessionOption.get('data_dir'), cookieSessionData)
 
                 if os.path.isfile(sessionFile):
                     if key:
-                        sessionData = self.__readSessionFile(sessionFile).get(key)
+                        sessionData = self._readSessionFile(sessionFile).get(key)
 
                     else:
-                        sessionData = self.__readSessionFile(sessionFile)
+                        sessionData = self._readSessionFile(sessionFile)
 
         except Exception as e:
             print(e)
@@ -221,17 +221,17 @@ class Session():
         removedData = {}
 
         try:
-            currentUtcTime = self.__getCurrentUtcTimeHash()
+            currentUtcTime = self._getCurrentUtcTimeHash()
 
             # get cookie from current request if not exist just add it
             cookieSessionData = request.get_cookie('s', currentUtcTime.get('hexdigest'))
 
             # create session file
-            if os.path.isdir(self.__sessionOption.get('data_dir')):
-                sessionFile = os.path.join(self.__sessionOption.get('data_dir'), cookieSessionData)
+            if os.path.isdir(self._sessionOption.get('data_dir')):
+                sessionFile = os.path.join(self._sessionOption.get('data_dir'), cookieSessionData)
 
                 if os.path.isfile(sessionFile):
-                    loadedData = self.__readSessionFile(sessionFile)
+                    loadedData = self._readSessionFile(sessionFile)
 
                     if isinstance(loadedData, dict):
 
@@ -254,14 +254,14 @@ class Session():
         '''
         expiredSession = list()
 
-        if os.path.isdir(self.__sessionOption.get('data_dir')):
+        if os.path.isdir(self._sessionOption.get('data_dir')):
 
-            files = os.listdir(self.__sessionOption.get('data_dir'))
+            files = os.listdir(self._sessionOption.get('data_dir'))
             for fname in files:
 
-                sessionFile = os.path.sep.join([self.__sessionOption.get('data_dir'), fname])
+                sessionFile = os.path.sep.join([self._sessionOption.get('data_dir'), fname])
                 if os.path.isfile(sessionFile):
-                    sessionData = self.__readSessionFile(sessionFile)
+                    sessionData = self._readSessionFile(sessionFile)
 
                     if isinstance(sessionData, dict):
                         sessionDatetime = sessionData.get('date_created')

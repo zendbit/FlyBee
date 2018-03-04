@@ -18,7 +18,7 @@ class SystemCleaner():
 
     def __init__(self):
 
-        self.__systemToClean = AppConfig().systemCleaner()
+        self._systemToClean = AppConfig().systemCleaner()
 
 
     def startCleaner(self):
@@ -28,7 +28,7 @@ class SystemCleaner():
             def systemCleaner():
                 while (True):
                     try:
-                        for cleanSystem in self.__systemToClean:
+                        for cleanSystem in self._systemToClean:
                             cleanSystem()
 
                     except:
