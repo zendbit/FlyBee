@@ -27,7 +27,7 @@ class SMTPConnect():
 
     def __init__(self, config):
         appConfig = AppConfig().smtpOptions()
-        self._config = appConfig.get(config)
+        self.__config = appConfig.get(config)
         
 
     def connect(self):
@@ -44,7 +44,7 @@ class SMTPConnect():
             'message':None
         }
 
-        smtpConfig = self._config
+        smtpConfig = self.__config
         if smtpConfig:
             ssl = smtpConfig.get('ssl')
             server = smtpConfig.get('server')
@@ -54,15 +54,15 @@ class SMTPConnect():
             if ssl and ssl.get('certfile') and ssl.get('keyfile'):
                 port = smtpConfig.get('port') if smtpConfig.get('port') else smtplib.SMTP_SSL_PORT
 
-                outputMessage = self._connectSMTPSSL(server, port, user, password, certfile=ssl.get('certfile'), keyfile=ssl.get('keyfile'), sslpassword=ssl.get('password'))
+                outputMessage = self.__connectSMTPSSL(server, port, user, password, certfile=ssl.get('certfile'), keyfile=ssl.get('keyfile'), sslpassword=ssl.get('password'))
 
             else:
                 port = smtpConfig.get('port') if smtpConfig.get('port') else smtplib.SMTP_PORT
-                outputMessage = self._connectSMTP(server, port, user, password)
+                outputMessage = self.__connectSMTP(server, port, user, password)
 
                 if outputMessage.get('code') == SMTPConnect.CODE_FAIL:
                     port = smtpConfig.get('port') if smtpConfig.get('port') else smtplib.SMTP_SSL_PORT
-                    outputMessage = self._connectSMTPSSL(server, port, user, password)
+                    outputMessage = self.__connectSMTPSSL(server, port, user, password)
 
         else:
             outputMessage['message'] = 'smtp configuration for {} not found'.format(config)
@@ -77,9 +77,9 @@ class SMTPConnect():
             'message':'Quit smtp session'
         }
 
-        if self._smtp:
+        if self.__smtp:
             try:
-                self._smtp.quit()
+                self.__smtp.quit()
 
             except Exception as ex:
                 outputMessage['message'] = 'Failed when quit the smptp session {}'.format(ex)
@@ -87,7 +87,7 @@ class SMTPConnect():
         return outputMessage
 
 
-    def _connectSMTP(self, host, port, user, password):
+    def __connectSMTP(self, host, port, user, password):
         '''
         return
         {
@@ -102,8 +102,8 @@ class SMTPConnect():
         }
 
         try:
-            self._smtp = SMTP(host, port, timeout=10)
-            self._smtp.login(user, password)
+            self.__smtp = SMTP(host, port, timeout=10)
+            self.__smtp.login(user, password)
             outputMessage['code'] = SMTPConnect.CODE_OK
             outputMessage['message'] = 'Success connected to {} {}'.format(host, port)
 
@@ -113,7 +113,7 @@ class SMTPConnect():
         return outputMessage
 
     
-    def _connectSMTPSSL(self, host, port, user, password, certfile=None, keyfile=None, sslpassword=None):
+    def __connectSMTPSSL(self, host, port, user, password, certfile=None, keyfile=None, sslpassword=None):
         '''
         return
         {
@@ -133,8 +133,8 @@ class SMTPConnect():
                 sslContext = SSLContext()
                 sslContext.load_cert_chain(certfile, keyfile, sslpassword)
 
-            self._smtp = SMTP_SSL(host, port, context=sslContext, timeout=10)
-            self._smtp.login(user, password)
+            self.__smtp = SMTP_SSL(host, port, context=sslContext, timeout=10)
+            self.__smtp.login(user, password)
             outputMessage['code'] = SMTPConnect.CODE_OK
             outputMessage['message'] = 'Success connected to {} {}'.format(host, port)
 
@@ -155,7 +155,7 @@ class SMTPConnect():
         }
 
         try:
-            self._smtp.send_message(messageBuilder)
+            self.__smtp.send_message(messageBuilder)
             outputMessage['code'] = SMTPConnect.CODE_OK
             outputMessage['message'] = 'Success sending message'
 
@@ -182,31 +182,31 @@ class MessageBuilder():
             msg_subject = 'Good Morning'
         '''
         
-        self._message = MIMEMultipart()
-        self._messageAttachment = []
-        self._rcptOptions = []
-        self._mailOptions = []
+        self.__message = MIMEMultipart()
+        self.__messageAttachment = []
+        self.__rcptOptions = []
+        self.__mailOptions = []
 
 
     def clear(self):
-        self._message = MIMEMultipart()
-        self._messageAttachment.clear()
-        self._rcptOptions.clear()
-        self._mailOptions.clear()
+        self.__message = MIMEMultipart()
+        self.__messageAttachment.clear()
+        self.__rcptOptions.clear()
+        self.__mailOptions.clear()
 
 
     def sender(self, sender):
-        self._message['from'] = sender
+        self.__message['from'] = sender
         return self
 
 
     def sendTo(self, sendTo=[]):
-        self._message['To'] = MessageBuilder.COMMASPACE.join(sendTo)
+        self.__message['To'] = MessageBuilder.COMMASPACE.join(sendTo)
         return self
 
 
     def subject(self, subject):
-        self._message['Subject'] = subject
+        self.__message['Subject'] = subject
         return self
 
         
@@ -216,7 +216,7 @@ class MessageBuilder():
             ccTo = ['a@domain.com', 'b@domain.com']
         '''
         
-        self._message['CC'] = MessageBuilder.COMMASPACE.join(ccTo)
+        self.__message['CC'] = MessageBuilder.COMMASPACE.join(ccTo)
         return self
 
         
@@ -226,7 +226,7 @@ class MessageBuilder():
             bccTo = ['a@domain.com', 'b@domain.com']
         '''
         
-        self._message['BCC'] = MessageBuilder.COMMASPACE.join(bccTo)
+        self.__message['BCC'] = MessageBuilder.COMMASPACE.join(bccTo)
         return self
 
         
@@ -238,7 +238,7 @@ class MessageBuilder():
             should be in list
         '''
         
-        self._mailOptions = mailOptions
+        self.__mailOptions = mailOptions
         return self
 
         
@@ -249,7 +249,7 @@ class MessageBuilder():
             see smtplib send_mail
         '''
         
-        self._rcptOptions = rcptOptions
+        self.__rcptOptions = rcptOptions
         return self
 
             
@@ -260,7 +260,7 @@ class MessageBuilder():
                 attachApplication('/home/amru/timesheet.xlsx')
         '''
 
-        self._messageAttachment.append({
+        self.__messageAttachment.append({
                 'file':filePath,
                 'mimeType':mimeType,
                 'encoder':encoder,
@@ -279,7 +279,7 @@ class MessageBuilder():
             if disposition True, text should be to filePath, like '/home/amru/test.txt'
         '''
 
-        self._messageAttachment.append({
+        self.__messageAttachment.append({
                 'file':text,
                 'mimeType':mimeType,
                 'charset':charset,
@@ -297,7 +297,7 @@ class MessageBuilder():
                 attachImage('/home/amru/timesheet.png')
         '''
 
-        self._messageAttachment.append({
+        self.__messageAttachment.append({
                 'file':filePath,
                 'mimeType':mimeType,
                 'encoder':encoder,
@@ -316,7 +316,7 @@ class MessageBuilder():
                 attachMessage(messageObj)
         '''
 
-        self._messageAttachment.append({
+        self.__messageAttachment.append({
                 'msg':messageObj,
                 'mimeType':mimeType,
                 'disposition':disposition,
@@ -333,7 +333,7 @@ class MessageBuilder():
                 attachAudio('/home/amru/timesheet.ogg')
         '''
 
-        self._messageAttachment.append({
+        self.__messageAttachment.append({
                 'file':filePath,
                 'mimeType':mimeType,
                 'encoder':encoder,
@@ -352,7 +352,7 @@ class MessageBuilder():
                 attachBase('/home/amru/timesheet.ogg', 'audio/ogg-vorbis')
         '''
 
-        self._messageAttachment.append({
+        self.__messageAttachment.append({
                 'file':filePath,
                 'main_mime':mimeMain,
                 'mimeType':mimeType,
@@ -370,7 +370,7 @@ class MessageBuilder():
             create message to send with send message
         '''
 
-        for attachment in self._messageAttachment:
+        for attachment in self.__messageAttachment:
             part = None
             f = None
             
@@ -429,12 +429,12 @@ class MessageBuilder():
                 if attachment.get('disposition') and f:
                     part.add_header('Content-Disposition', 'attachment; filename="' + f.name + '"')
                     
-                self._message.attach(part)
+                self.__message.attach(part)
 
             if f:
                 f.close()
 
-        message = deepcopy(self._message)
+        message = deepcopy(self.__message)
         self.clear()
 
         return message
@@ -499,8 +499,8 @@ class IMAPConnect():
 
     def __init__(self, config):
         appConfig = AppConfig().imapOptions()
-        self._config = appConfig.get(config)
-        self._dataDir = os.path.sep.join((self._config.get('data_dir'), self._config.get('user')))
+        self.__config = appConfig.get(config)
+        self.__dataDir = os.path.sep.join((self.__config.get('data_dir'), self.__config.get('user')))
 
 
     def connect(self):
@@ -517,7 +517,7 @@ class IMAPConnect():
             'message':None
         }
 
-        imapConfig = self._config
+        imapConfig = self.__config
         if imapConfig:
             ssl = imapConfig.get('ssl')
             server = imapConfig.get('server')
@@ -526,15 +526,15 @@ class IMAPConnect():
 
             if ssl and ssl.get('certfile') and ssl.get('keyfile'):
                 port = imapConfig.get('port') if imapConfig.get('port') else imaplib.IMAP4_SSL_PORT
-                outputMessage = self._connectIMAPSSL(server, port, user, password, certfile=ssl.get('certfile'), keyfile=ssl.get('keyfile'), sslpassword=ssl.get('password'))
+                outputMessage = self.__connectIMAPSSL(server, port, user, password, certfile=ssl.get('certfile'), keyfile=ssl.get('keyfile'), sslpassword=ssl.get('password'))
 
             else:
                 port = imapConfig.get('port') if imapConfig.get('port') else imaplib.IMAP4_PORT
-                outputMessage = self._connectIMAP(server, port, user, password)
+                outputMessage = self.__connectIMAP(server, port, user, password)
 
                 if outputMessage.get('code') == SMTPConnect.CODE_FAIL:
                     port = imapConfig.get('port') if imapConfig.get('port') else imaplib.IMAP4_SSL_PORT
-                    outputMessage = self._connectIMAPSSL(server, port, user, password)
+                    outputMessage = self.__connectIMAPSSL(server, port, user, password)
 
         else:
             outputMessage['message'] = 'imap configuration for {} not found'.format(config)
@@ -549,9 +549,9 @@ class IMAPConnect():
             'message':'Quit imap session'
         }
 
-        if self._imap:
+        if self.__imap:
             try:
-                self._imap.logout()
+                self.__imap.logout()
 
             except Exception as ex:
                 outputMessage['message'] = 'Failed when quit the imap session {}'.format(ex)
@@ -559,7 +559,7 @@ class IMAPConnect():
         return outputMessage
 
 
-    def _connectIMAP(self, host, port, user, password):
+    def __connectIMAP(self, host, port, user, password):
         '''
         return
         {
@@ -574,8 +574,8 @@ class IMAPConnect():
         }
 
         try:
-            self._imap = IMAPObject(host, port, timeout=3)
-            self._imap.login(user, password)
+            self.__imap = IMAPObject(host, port, timeout=3)
+            self.__imap.login(user, password)
             outputMessage['code'] = IMAPConnect.CODE_OK
             outputMessage['message'] = 'Success connected to {} {}'.format(host, port)
 
@@ -585,7 +585,7 @@ class IMAPConnect():
         return outputMessage
 
     
-    def _connectIMAPSSL(self, host, port, user, password, certfile=None, keyfile=None, sslpassword=None):
+    def __connectIMAPSSL(self, host, port, user, password, certfile=None, keyfile=None, sslpassword=None):
         '''
         return
         {
@@ -605,8 +605,8 @@ class IMAPConnect():
                 sslContext = SSLContext()
                 sslContext.load_cert_chain(certfile, keyfile, sslpassword)
                 
-            self._imap = IMAPSSLObject(host, port, ssl_context=sslContext, timeout=3)
-            self._imap.login(user, password)
+            self.__imap = IMAPSSLObject(host, port, ssl_context=sslContext, timeout=3)
+            self.__imap.login(user, password)
             outputMessage['code'] = IMAPConnect.CODE_OK
             outputMessage['message'] = 'Success connected to {} {}'.format(host, port)
 
@@ -633,7 +633,7 @@ class IMAPConnect():
         }
 
         try:
-            dirPath = os.path.sep.join((self._dataDir, emailId))
+            dirPath = os.path.sep.join((self.__dataDir, emailId))
             os.makedirs(dirPath, exist_ok=True)
             filePath = os.path.sep.join((dirPath, emailId))
             f = open(filePath, 'rb')
@@ -675,7 +675,7 @@ class IMAPConnect():
 
         try:
             emailId = emailData.get('id')
-            dirPath = os.path.sep.join((self._dataDir, emailId))
+            dirPath = os.path.sep.join((self.__dataDir, emailId))
             os.makedirs(dirPath, exist_ok=True)
             filePath = os.path.sep.join((dirPath, emailId))
             f = open(filePath, 'wb')
@@ -709,7 +709,7 @@ class IMAPConnect():
         }
         
         try:
-            status, msg = self._imap.list()
+            status, msg = self.__imap.list()
             msg = [mailbox.decode('UTF-8') for mailbox in msg]
             outputMessage['code'] = IMAPConnect.CODE_OK
             outputMessage['message'] = status
@@ -741,7 +741,7 @@ class IMAPConnect():
         }
         
         try:
-            status, msg = self._imap.select(mailbox, readonly)
+            status, msg = self.__imap.select(mailbox, readonly)
             outputMessage['code'] = SMTPConnect.CODE_OK
             outputMessage['message'] = status
             outputMessage['data'] = msg
@@ -772,7 +772,7 @@ class IMAPConnect():
         }
 
         try:
-            status, msg = self._imap.uid('search', None, *criterion)
+            status, msg = self.__imap.uid('search', None, *criterion)
             
             emailIds = []
             if len(msg):
@@ -808,7 +808,7 @@ class IMAPConnect():
         }
 
         try:
-            status, msg = self._imap.uid('fetch', emailId, *criterion)
+            status, msg = self.__imap.uid('fetch', emailId, *criterion)
             outputMessage['code'] = IMAPConnect.CODE_OK
             outputMessage['message'] = 'OK'
             outputMessage['data'] = msg
@@ -838,7 +838,7 @@ class IMAPConnect():
         }
 
         try:
-            status, msg = self._imap.uid('STORE', emailId, command, flaglist)
+            status, msg = self.__imap.uid('STORE', emailId, command, flaglist)
             outputMessage['code'] = IMAPConnect.CODE_OK
             outputMessage['message'] = status
             outputMessage['data'] = msg
@@ -867,7 +867,7 @@ class IMAPConnect():
         }
 
         try:
-            status, msg = self._imap.expunge()
+            status, msg = self.__imap.expunge()
             outputMessage['code'] = IMAPConnect.CODE_OK
             outputMessage['message'] = status
             outputMessage['data'] = msg
@@ -959,7 +959,7 @@ class IMAPConnect():
         }
 
         try:
-            dirPath = os.path.sep.join((self._dataDir, emailId))
+            dirPath = os.path.sep.join((self.__dataDir, emailId))
             
             # check serialize cache
             emailData = self.fetchHeader(emailId)
@@ -1038,11 +1038,11 @@ class MessageFilterBuilder():
     '''
     
     def __init__(self):
-        self._messageFilter = []
+        self.__messageFilter = []
 
 
     def clear(self):
-        self._messageFilter.clear()
+        self.__messageFilter.clear()
 
         
     def all(self):
@@ -1052,7 +1052,7 @@ class MessageFilterBuilder():
             See Size Limits.
         '''
         
-        self._messageFilter.append('ALL')
+        self.__messageFilter.append('ALL')
         return self
         
 
@@ -1062,7 +1062,7 @@ class MessageFilterBuilder():
             The date must be formatted like 05-Jul-2015.
         '''
         
-        self._messageFilter.append('BEFORE "{}"'.format(date))
+        self.__messageFilter.append('BEFORE "{}"'.format(date))
         return self
         
 
@@ -1072,7 +1072,7 @@ class MessageFilterBuilder():
             The date must be formatted like 05-Jul-2015.
         '''
         
-        self._messageFilter.append('SINCE "{}"'.format(date))
+        self.__messageFilter.append('SINCE "{}"'.format(date))
         return self
         
 
@@ -1082,7 +1082,7 @@ class MessageFilterBuilder():
             The date must be formatted like 05-Jul-2015.
         '''
         
-        self._messageFilter.append('ON "{}"'.format(date))
+        self.__messageFilter.append('ON "{}"'.format(date))
         return self
         
 
@@ -1093,7 +1093,7 @@ class MessageFilterBuilder():
             ex: '"amru rosyada"'
         '''
         
-        self._messageFilter.append('SUBJECT "{}"'.format(text))
+        self.__messageFilter.append('SUBJECT "{}"'.format(text))
         return self
         
 
@@ -1104,7 +1104,7 @@ class MessageFilterBuilder():
             ex: '"amru rosyada"'
         '''
         
-        self._messageFilter.append('BODY "{}"'.format(text))
+        self.__messageFilter.append('BODY "{}"'.format(text))
         return self
         
 
@@ -1115,7 +1115,7 @@ class MessageFilterBuilder():
             ex: '"amru rosyada"'
         '''
         
-        self._messageFilter.append('TEXT "{}"'.format(text))
+        self.__messageFilter.append('TEXT "{}"'.format(text))
         return self
         
 
@@ -1126,7 +1126,7 @@ class MessageFilterBuilder():
             '"amru.rosyada@gmail.com amru.rosyada@hotmail.com"'
         '''
         
-        self._messageFilter.append('FROM "{}"'.format(from_addr))
+        self.__messageFilter.append('FROM "{}"'.format(from_addr))
         return self
         
 
@@ -1137,7 +1137,7 @@ class MessageFilterBuilder():
             '"amru.rosyada@gmail.com amru.rosyada@hotmail.com"'
         '''
         
-        self._messageFilter.append('CC "{}"'.format(cc_addr))
+        self.__messageFilter.append('CC "{}"'.format(cc_addr))
         return self
         
 
@@ -1148,7 +1148,7 @@ class MessageFilterBuilder():
             '"amru.rosyada@gmail.com amru.rosyada@hotmail.com"'
         '''
         
-        self._messageFilter.append('BCC "{}"'.format(bcc_addr))
+        self.__messageFilter.append('BCC "{}"'.format(bcc_addr))
         return self
         
 
@@ -1158,7 +1158,7 @@ class MessageFilterBuilder():
             filter all email with flag \Seen
         '''
         
-        self._messageFilter.append('SEEN')
+        self.__messageFilter.append('SEEN')
         return self
         
 
@@ -1168,7 +1168,7 @@ class MessageFilterBuilder():
             filter all email without flag \Seen
         '''
         
-        self._messageFilter.append('UNSEEN')
+        self.__messageFilter.append('UNSEEN')
         return self
         
 
@@ -1178,7 +1178,7 @@ class MessageFilterBuilder():
             Returns all messages with the \Answered flag
         '''
         
-        self._messageFilter.append('ANSWERED')
+        self.__messageFilter.append('ANSWERED')
         return self
         
 
@@ -1188,7 +1188,7 @@ class MessageFilterBuilder():
             Returns all messages without the \Answered flag
         '''
         
-        self._messageFilter.append('UNANSWERED')
+        self.__messageFilter.append('UNANSWERED')
         return self
         
 
@@ -1198,7 +1198,7 @@ class MessageFilterBuilder():
             Returns all messages with the \Deleted flag
         '''
         
-        self._messageFilter.append('DELETED')
+        self.__messageFilter.append('DELETED')
         return self
         
 
@@ -1208,7 +1208,7 @@ class MessageFilterBuilder():
             Returns all messages without the \Deleted flag
         '''
         
-        self._messageFilter.append('UNDELETED')
+        self.__messageFilter.append('UNDELETED')
         return self
         
 
@@ -1218,7 +1218,7 @@ class MessageFilterBuilder():
             Returns all messages with the \Draft flag
         '''
         
-        self._messageFilter.append('DRAFT')
+        self.__messageFilter.append('DRAFT')
         return self
         
 
@@ -1228,7 +1228,7 @@ class MessageFilterBuilder():
             Returns all messages without the \Draft flag
         '''
         
-        self._messageFilter.append('UNDRAFT')
+        self.__messageFilter.append('UNDRAFT')
         return self
         
 
@@ -1238,7 +1238,7 @@ class MessageFilterBuilder():
             Returns all messages with the \Flagged flag
         '''
         
-        self._messageFilter.append('FLAGGED')
+        self.__messageFilter.append('FLAGGED')
         return self
         
 
@@ -1248,7 +1248,7 @@ class MessageFilterBuilder():
             Returns all messages without the \Flagged flag
         '''
         
-        self._messageFilter.append('UNFLAGGED')
+        self.__messageFilter.append('UNFLAGGED')
         return self
         
 
@@ -1258,7 +1258,7 @@ class MessageFilterBuilder():
             then reset all value to empty
         '''
         
-        criterion = ' '.join(self._messageFilter).strip()
+        criterion = ' '.join(self.__messageFilter).strip()
         self.clear()
         return criterion
 

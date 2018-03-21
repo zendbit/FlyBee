@@ -1,0 +1,22 @@
+% from shared import Shared
+<html>
+    <head>
+        <title>{{data.get('page_title')}}</title>
+
+        <!-- add meta -->
+        % scripts = Shared().clientScripts().get('reactjs_sample')
+        % for meta in scripts.get('meta'):
+        <meta {{!meta}}>
+        % end
+
+        <!-- add client link -->
+        % for link in scripts.get('link'):
+        <link {{!link}}>
+        % end
+
+        <!-- add client script -->
+        % for script in scripts.get('script'):
+        <script {{!script}}></script>
+        % end
+    </head>
+    <body>

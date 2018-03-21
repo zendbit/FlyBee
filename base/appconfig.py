@@ -172,8 +172,8 @@ class AppConfig():
         from sources.home import Home
 
         return [
-            # serving static file
-            ['/contents/<filename:path>', 'GET', lambda filename: static_file(filename, root=os.path.sep.join([os.getcwd(), 'contents']))],
+            # serving static file from each templates
+            ['/templates/<filename:path>', 'GET', lambda filename: static_file(filename, root=os.path.sep.join([os.getcwd(), 'templates', 'contents']))],
 
             # home index test
             ['/', ['GET'], Home().index],

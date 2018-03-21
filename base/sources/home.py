@@ -40,5 +40,5 @@ class Home():
         }
 
 
-        return template('templates/grayscale/home.html', data=data)
+        return template('templates/html/reactjs_sample/home.html', data=data)
     

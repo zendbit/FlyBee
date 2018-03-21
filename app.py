@@ -10,6 +10,7 @@ import urllib.request
 import subprocess
 import shutil
 import socket
+import glob
 
 
 def missingDependency(appname):
@@ -182,6 +183,52 @@ def setupNewApp(appname):
         sys.exit(1)
 
 
+# set default app
+def setDefaultApp(appname):
+    appDir = os.path.sep.join((os.getcwd(), 'application', appname))
+    defaultapp = os.path.sep.join((os.getcwd(), 'default.app'))
+    if os.path.isdir(appDir):
+        try:
+            f = open(defaultapp, 'w+')
+            f.write('{}'.format(appname))
+            f.close()
+
+        except Exception as ex:
+            print('Failed set default app. {}'.format(ex))
+
+    else:
+        print('Failed set default app. No such application with name {}'.format(appname))
+
+
+def getDefaultApp():
+    appname = None
+    defaultapp = os.path.sep.join((os.getcwd(), 'default.app'))
+    if os.path.isfile(defaultapp):
+        try:
+            f = open(defaultapp, 'r')
+            appname = f.readline().strip()
+            f.close()
+
+        except Exception as ex:
+            print('Failed get default app. {}'.format(ex))
+
+    else:
+        print('Failed get default app. Default app not set yet.')
+
+    return appname
+
+def showApplicationList():
+    appDir = glob.glob(os.path.sep.join((os.getcwd(), 'application', '*')))
+    print('#')
+    filteredApp = [fapp.split(os.path.sep)[-1] for fapp in appDir if os.path.isdir(fapp)]
+    if len(filteredApp) != 0:
+        for app in filteredApp:
+            print('-> {}'.format(app))
+
+    else:
+        print('-> {}'.format('no available application'))
+    print('#')
+
 # starting point
 def main():
     if sys.version_info.major < 3:
@@ -189,6 +236,8 @@ def main():
         print('-> only work on python version 3.x')
         print('#')
         sys.exit(1)
+
+    defaultapp = getDefaultApp()
 
     parser = ArgumentParser()
 
@@ -203,10 +252,24 @@ def main():
     parser.add_argument('--interval', help='reload interval for auto reload')
     parser.add_argument('--certfile', help='ssl cert file')
     parser.add_argument('--keyfile', help='ssl key file')
+    parser.add_argument('--default', help='set default app, so we can only call app.py with param --startdefault and --stopdefault param. --default appname')
+    parser.add_argument('--showdefault', help='show the default application, --showdefault', action='store_true')
+    parser.add_argument('--showapps', help='show available application list, --showapps', action='store_true')
+    parser.add_argument('--stopdefault', help='stop the default application, --stopdefault', action='store_true')
+    parser.add_argument('--startdefault', help='start the default application, --startdefault', action='store_true')
 
     # project creation management
     parser.add_argument('--setup', help='setup application (crate new application), --setup appname')
+
+    #defaultapp = getDefaultApp()
+    #if defaultapp:
+    #    parser.set_defaults(start=defaultapp, stop=defaultapp)
+
+    #print(parser.get_default('start'))
+
     args = parser.parse_args()
+
+    defaultapp = getDefaultApp()
 
     # check setup command
     if args.setup:
@@ -218,9 +281,32 @@ def main():
         setupCheck(args.start)
         startServer(args)
 
+    elif args.startdefault:
+        if defaultapp:
+            args.start = defaultapp
+            setupCheck(args.start)
+            startServer(args)
+
+    # set default app
+    elif args.default:
+        setDefaultApp(args.default)
+
     # server stop command
     elif args.stop:
         stopServer(args)
+
+    elif args.stopdefault:
+        if defaultapp:
+            args.stop = defaultapp
+            stopServer(args)
+
+    elif args.showdefault:
+        print('#')
+        print('-> {}'.format(getDefaultApp()))
+        print('#')
+
+    elif args.showapps:
+        showApplicationList()
 
     else:
         print('''
@@ -233,6 +319,18 @@ def main():
 
             to stop
             python3 app.py --stop appname
+
+            set default app
+            python3 app.py --default appname
+
+            start default app
+            python3 app.py --startdefault [--host --port --reloader --debug --server --interval]
+
+            stop default app
+            python3 app.py --stopdefault
+
+            show available application
+            python3 app.py --showapps
         ''')
 
 # run the main

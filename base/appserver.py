@@ -23,7 +23,7 @@ def writePID(appPID):
 
     try:
         f = open(appserverPIDFile, mode='w')
-        f.write(' {}'.format(appPID))
+        f.write('{}'.format(appPID))
         f.close()
         result = True
 
