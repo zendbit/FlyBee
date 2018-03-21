@@ -4,7 +4,7 @@ class Shared():
     def data(self):
 
         data = {
-            'page_title':'FlyBee Grayscale - Start Bootstrap Theme',
+            'page_title':'FlyBee Reactjs Sample',
             }
 
         return data
