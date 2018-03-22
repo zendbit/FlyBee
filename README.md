@@ -1,5 +1,3 @@
-[Go to Wiki](https://github.com/zenvarlab/FlyBee/wiki)
-
 # FlyBee
 Python microservice framework based on bottle framework, fully compatible with bottle framework.
 
@@ -45,11 +43,36 @@ you will have two application myApplication and myApplication2 under application
 python app.py --start myApplication
 ```
 
-the command above will run your application on default port 8080, you can also change the configuration but we will talk deeper in other section.
+#### if can directly start and stop the application without application name parameter if we already set the default app
+
+```
+python app.py --default myApplication2
+```
+
+#### after set the default application can directly start and stop the application using --startdefault and --stopdefault
+
+```
+python app.py --startdefault
+python app.py --stopdefault
+```
+
+#### to show the default application, we can use this command
+
+```
+python app.py --showdefault
+```
+
+#### to show available application, we can use this command
+
+```
+python app.py --showapps
+```
+
+the application will run on default port 8080, you can also change the configuration but we will talk deeper in other section.
 
 #### now after application running you just need to point the browser to [http://localhost:8080](http://localhost:8080)
 
-![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2006.29.40.jpg "running the apps")
+![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-03-21%20at%2015.39.06.png "running the apps")
 
 how to stop the application?
 
@@ -67,21 +90,14 @@ let we use the myApplication and myApplication2 as example, the apps that alread
 
 Ok, let look inside the myApplication folder:
 
-![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2006.55.06.jpg "struct")
+![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-03-21%20at%2016.13.22.png "struct")
 
 #### The main folder:
-- contents : will serving static file like css, image, javascript, etc. We can add more static serving. We will discuss later.
 - plugins : this folder contain our library that not direct control to UI, like encryption, Oauth to thirdparty login, database access library, etc.
 - sources : this folder contain main control for user response and request. Modify header, status code and return template view. This will interact with the client UI and will related with routes of the webapps.
 - templates : this folder contain templating sistem, we use templating system from bottle framework.
 
 The structure is not strict you can add more folder or file depend on your needs :-)
-
-#### Take a look at the contents folder:
-
-![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2007.14.22.jpg "contents")
-
-as we can see, the folder content contain themes called grayscale and inside grayscale contain the assets for the grayscale theme. the main purpose is we can add more theme and keep it separated between themes.
 
 #### Take a look at the plugins folder:
 
@@ -148,16 +164,16 @@ class Home():
         }
 
 
-        return template('templates/grayscale/home.html', data=data)
+        return template('templates/html/reactjs_sample/home.html', data=data)
 ```
 
-from the code above we can see, there are some sample code how to use the session and shared data passing to the template grayscale then return response as normal html page.
+from the code above we can see, there are some sample code how to use the session and shared data passing to the template reactjs_sample then return response as normal html page.
 
 #### Take a look at the templates folder:
 
-![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-02-15%20at%2007.39.44.jpg "templates")
+![alt text](https://raw.githubusercontent.com/zenvarlab/image-asset/master/Screen%20Shot%202018-03-21%20at%2015.52.06.png "templates")
 
-The template is contain html text, the sample is using grayscale theme to make it consistent with the content/grayscale. So if we need to create new theme we can create in separate folder :-).
+The template is contain html folder and contents folder, the sample is using reactjs_sample theme to make it. the html folder contain list of themes in this case example we have reactjs_sample themes and contents folder is contains the resource of the reactjs_sample (ie: js, css, image etc)
 
 The template is fully compatible and same with bottle SimpleTemplate, if you use bottle framework i'ts like eating burger :D.
 
@@ -175,7 +191,7 @@ class Shared():
     def data(self):
 
         data = {
-            'page_title':'FlyBee Grayscale - Start Bootstrap Theme',
+            'page_title':'FlyBee Reactjs Sample',
             }
 
         return data
@@ -186,60 +202,19 @@ class Shared():
     def clientScripts(self):
 
         scripts = {
-            'grayscale':{
-                # link
-                # ex:
-                # [
-                #    'href="bootsrap.css" type="text/css" rel="stylesheet"',
-                #    'href="bootstrapthemes.css" type="text/css" rel="stylesheet"'
-                # ]
+            'reactjs_sample':{
                 'link':[
-                    'href="/contents/grayscale/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"',
-                    'href="/contents/grayscale/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"',
-                    'href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"',
-                    'href="https://fonts.googleapis.com/css?family=Cabin:700" rel="stylesheet" type="text/css"',
-                    'href="/contents/grayscale/css/grayscale.min.css" rel="stylesheet"'
-                ],
-
-                # script source
-                # ex:
-                # [
-                #    'src="bootstrap.js" type="text/babel"',
-                #    'src="bootstrapthemes.js" type="text/javascript"'
-                # ]
-                'script':[
-                    'src="/contents/grayscale/vendor/jquery/jquery.min.js"',
-                    'src="/contents/grayscale/vendor/bootstrap/js/bootstrap.bundle.min.js"',
-                    'src="/contents/grayscale/vendor/jquery-easing/jquery.easing.min.js"',
-                    'src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRngKslUGJTlibkQ3FkfTxj3Xss1UlZDA&sensor=false"',
-                    'src="/contents/grayscale/js/grayscale.min.js"'
-                ],
-
-                # meta source
-                # ex:
-                # [
-                #    'charset="UTF-8"',
-                #    'name="description" content="Free Web tutorials"',
-                #    'name="keywords" content="HTML,CSS,XML,JavaScript"',
-                #    'name="author" content="John Doe"',
-                #    'name="viewport" content="width=device-width, initial-scale=1.0"',
-                # ]
-                'meta':[
-                    'charset="utf-8"',
-                    'name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"',
-                    'name="description" content=""',
-                    'name="author" content=""'
-                ]
-            },
-            'others':{
-                'link':[
-
+                    #'href="/contents/grayscale/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"',
+                    #'href="/contents/grayscale/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"',
                 ],
                 'script':[
-
+                    'src="/templates/reactjs_sample/js/react/react.production.min.js"',
+                    'src="/templates/reactjs_sample/js/react/react-dom.production.min.js"',
+                    'src="/templates/reactjs_sample/js/react/babel.min.js"'
                 ],
                 'meta':[
-
+                    #'charset="utf-8"',
+                    #'name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"',
                 ]
             }
         }
@@ -250,7 +225,7 @@ class Shared():
 shared.py contain resource to shared accorss application, in the code above contain data() and clientScripts() shared resource.
 
 the data() as you can see it called from the sources/home.py that will be pass to the template data.
-the clientScripts() is contain definition of meta, link and javascript will be used for the templates, we can see that grayscale containt the link, meta and script definition. This clientScripts() is called from templates/grayscale/header.html
+the clientScripts() is contain definition of meta, link and javascript will be used for the templates, we can see that reactjs_sample containt the link, meta and script definition. This clientScripts() is called from templates/html/reactjs_sample/header.html
 
 ```
 % from shared import Shared
@@ -259,22 +234,22 @@ the clientScripts() is contain definition of meta, link and javascript will be u
         <title>{{data.get('page_title')}}</title>
 
         <!-- add meta -->
-        % grayscaleTheme = Shared().clientScripts().get('grayscale')
-        % for link in grayscaleTheme.get('meta'):
-        <meta {{!link}}>
+        % scripts = Shared().clientScripts().get('reactjs_sample')
+        % for meta in scripts.get('meta'):
+        <meta {{!meta}}>
         % end
 
         <!-- add client link -->
-        % for link in grayscaleTheme.get('link'):
+        % for link in scripts.get('link'):
         <link {{!link}}>
         % end
 
         <!-- add client script -->
-        % for script in grayscaleTheme.get('script'):
+        % for script in scripts.get('script'):
         <script {{!script}}></script>
         % end
     </head>
-    <body id="page-top">
+    <body>
 ```
 
 from this case we can create separate resource that useable from accross the aplication context. But the structure is not restricted you can modify like what you want to do :-D.
@@ -305,6 +280,116 @@ class AppConfig():
         ]
 
 
+    def databaseOptions(self):
+
+        return {
+            'sqlite':{
+                'conn1':{
+                    'pragma':['foreign_keys=1', 'case_sensitive_like=1', 'auto_vacuum=1'],
+                    'dbfile':os.path.sep.join((os.getcwd(), 'cached_data', 'sqlite', 'example.db'))
+                }
+            },
+            'mariadb':{
+                'conn1':{
+                    'host':'127.0.0.1',
+                    'port':3306,
+                    'user':'',
+                    'password':'',
+                    'db':'',
+                    # see mysql_ssl_set() mysql documentation
+                    # ssl conn
+                    'ssl':{
+                        'ca':None, # not require cert and key
+                        'capath':None,
+                        'cert':None,
+                        'key':None,
+                        'cipher':None
+                    }
+                }
+            },
+            'postgre':{
+                'conn1':{
+                    'host':'127.0.0.1',
+                    'port':5432,
+                    'user':'',
+                    'password':'',
+                    'db':'',
+                    # ssl conn
+                    'ssl':{
+                        'sslrootcert':None, # not required sslcert and sslkey
+                        'sslcert':None,
+                        'sslkey':None
+                    }
+                }
+            },
+            'mongodb':{
+                'conn1':{
+                    'host':'127.0.0.1',
+                    'port':27017,
+                    'user':'',
+                    'password':'',
+                    # ssl conn
+                    'ssl':{
+                        'ssl_certfile':None,
+                        'ssl_keyfile':None,
+                        'ssl_pem_passphrase':None
+                    }
+                }
+            }
+        }
+
+
+    def imapOptions(self):
+
+        return {
+            'imap1':{
+                'server':'imap.gmail.com',
+                'port':None,
+                'user':'',
+                'password':'',
+                'ssl':{
+                    'certfile':None,
+                    'keyfile':None,
+                    'password':None
+                },
+                'data_dir':os.path.sep.join((os.getcwd(), 'cached_data', 'mail'))
+            }
+        }
+
+
+    def smtpOptions(self):
+        '''
+        you can add multiple email configuration (smtp)
+        {
+            'config1':{
+                'server':'smtp.gmail.com',
+                'port':None,
+                'user':'',
+                'password':'',
+                'ssl':{
+                    'certfile':None,
+                    'keyfile':None,
+                    'password':None
+                }
+            }
+        }
+        '''
+
+        return {
+            'smtp1':{
+                'server':'',
+                'port':None,
+                'user':'',
+                'password':'',
+                'ssl':{
+                    'certfile':None,
+                    'keyfile':None,
+                    'password':None
+                }
+            }
+        }
+
+
     def sessionOptions(self):
         '''
         control session
@@ -312,7 +397,7 @@ class AppConfig():
         
         return {
             'default_max_age':604800,
-            'data_dir':os.path.sep.join([os.getcwd(), 'plugins', 'session_data'])
+            'data_dir':os.path.sep.join((os.getcwd(), 'cached_data', 'session_data')),
         }
 
 
@@ -348,8 +433,8 @@ class AppConfig():
         from sources.home import Home
 
         return [
-            # serving static file
-            ['/contents/<filename:path>', 'GET', lambda filename: static_file(filename, root=os.path.sep.join([os.getcwd(), 'contents']))],
+            # serving static file from each templates
+            ['/templates/<filename:path>', 'GET', lambda filename: static_file(filename, root=os.path.sep.join([os.getcwd(), 'templates', 'contents']))],
 
             # home index test
             ['/', ['GET'], Home().index],
@@ -367,7 +452,6 @@ class AppConfig():
         return [
             Session().CleanExpiredSession
         ]
-        
 ```
 
 the appDependency(self) section is your list of dependency, will be installed using pip tool automatic and sync if target deployment is not meet the dependency.
@@ -412,7 +496,7 @@ the default value is one week max age in seconds.
 the serverOptions(self), contain configuration for server the default value is port 8080 but you can changes the value and configure to meet your need.
 
 ```
-def serverOptions(self):
+def severOptions(self):
         '''
         default server option
         '''
