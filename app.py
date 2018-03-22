@@ -23,7 +23,7 @@ def missingDependency(appname):
     appconfig = getattr(__import__('application.{}.appconfig'.format(appname), fromlist=('AppConfig',)), 'AppConfig')
 
     # default dependency + appconfig dependency
-    deps = ['gevent', 'bottle', 'pip', 'transcrypt', 'pymysql', 'psycopg2-binary', 'pymongo', 'anpylar'] + appconfig().appDependency()
+    deps = ['gevent', 'bottle', 'pip', 'transcrypt', 'pymysql', 'psycopg2-binary', 'pymongo', 'htmltree'] + appconfig().appDependency()
     installedDeps = [pkg.key for pkg in pip.get_installed_distributions()]
     for dep in deps.copy():
         if dep in installedDeps:
