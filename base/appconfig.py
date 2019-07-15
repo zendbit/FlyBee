@@ -1,5 +1,4 @@
 import os
-from bottle import static_file
 
 class AppConfig():
 
@@ -169,6 +168,7 @@ class AppConfig():
         ]
         '''
 
+        from bottle import static_file
         from sources.home import Home
 
         return [

@@ -18,13 +18,20 @@ def missingDependency(appname):
     get missing dependency and return list of missing dependency
     '''
 
-    import pip
+    # check compatibility with pip 10
+    try:
+        from pip._internal.utils.misc import get_installed_distributions
 
-    appconfig = getattr(__import__('application.{}.appconfig'.format(appname), fromlist=('AppConfig',)), 'AppConfig')
+    except:
+        from pip import get_installed_distributions
+
+    appconfig = getattr(__import__('application.{}.appconfig'.format(
+        appname), fromlist=('AppConfig',)), 'AppConfig')
 
     # default dependency + appconfig dependency
-    deps = ['gevent', 'bottle', 'pip', 'transcrypt', 'pymysql', 'psycopg2-binary', 'pymongo', 'htmltree'] + appconfig().appDependency()
-    installedDeps = [pkg.key for pkg in pip.get_installed_distributions()]
+    deps = ['gevent', 'bottle', 'pip', 'pymysql',
+            'psycopg2-binary', 'pymongo', 'htmltree'] + appconfig().appDependency()
+    installedDeps = [pkg.key for pkg in get_installed_distributions()]
     for dep in deps.copy():
         if dep in installedDeps:
             deps.remove(dep)
@@ -54,19 +61,19 @@ def buildParameter(args):
         param.append('--debug')
         param.append(args.debug)
 
-    if args.server is not None: 
+    if args.server is not None:
         param.append('--server')
         param.append(args.server)
 
-    if args.interval is not None: 
+    if args.interval is not None:
         param.append('--interval')
         param.append(args.interval)
 
-    if args.certfile is not None: 
+    if args.certfile is not None:
         param.append('--certfile')
         param.append(args.certfile)
 
-    if args.keyfile is not None: 
+    if args.keyfile is not None:
         param.append('--keyfile')
         param.append(args.keyfile)
 
@@ -86,10 +93,12 @@ def startServer(args):
     appDir = os.path.sep.join((os.getcwd(), 'application', args.start))
 
     if sys.platform.find('win') == 0:
-        calloutput = subprocess.run('pushd {} && START /B CMD /C CALL {} appserver.py -s start {}'.format(appDir, sys.executable, ' '.join(param)), shell=True, env={'LANG':'C'})
+        calloutput = subprocess.run('pushd {} && START /B CMD /C CALL {} appserver.py -s start {}'.format(
+            appDir, sys.executable, ' '.join(param)), shell=True, env={'LANG': 'C'})
 
     else:
-        calloutput = subprocess.run('cd {} && {} appserver.py -s start {} &'.format(appDir, sys.executable, ' '.join(param)), shell=True, env={'LANG':'C'})
+        calloutput = subprocess.run('cd {} && {} appserver.py -s start {} &'.format(
+            appDir, sys.executable, ' '.join(param)), shell=True, env={'LANG': 'C'})
 
     print(calloutput)
 
@@ -102,10 +111,12 @@ def stopServer(args):
     appDir = os.path.sep.join((os.getcwd(), 'application', args.stop))
 
     if sys.platform.find('win') == 0:
-        subprocess.run('pushd {} && {} appserver.py -s stop'.format(appDir, sys.executable), shell=True, env={'LANG':'C'})
+        subprocess.run('pushd {} && {} appserver.py -s stop'.format(appDir,
+                                                                    sys.executable), shell=True, env={'LANG': 'C'})
 
     else:
-        subprocess.run('cd {} && {} appserver.py -s stop'.format(appDir, sys.executable), shell=True, env={'LANG':'C'})
+        subprocess.run('cd {} && {} appserver.py -s stop'.format(appDir,
+                                                                 sys.executable), shell=True, env={'LANG': 'C'})
 
 
 def setupCheck(appname):
@@ -125,9 +136,12 @@ def setupCheck(appname):
         # check if python pip is installeds
         try:
             missDeps.index('pip')
-            print('=> installing pip from {}...'.format('https://bootstrap.pypa.io/get-pip.py'))
-            urllib.request.urlretrieve('https://bootstrap.pypa.io/get-pip.py', 'get-pip.py')
-            calloutput = subprocess.run('{} get-pip.py'.format(sys.executable), shell=True, env={'LANG':'C'})
+            print('=> installing pip from {}...'.format(
+                'https://bootstrap.pypa.io/get-pip.py'))
+            urllib.request.urlretrieve(
+                'https://bootstrap.pypa.io/get-pip.py', 'get-pip.py')
+            calloutput = subprocess.run(
+                '{} get-pip.py'.format(sys.executable), shell=True, env={'LANG': 'C'})
             os.remove('get-pip.py')
 
         except ValueError:
@@ -136,17 +150,25 @@ def setupCheck(appname):
         finally:
             # install the depedency if python pip is not missing
             import pip
+
+            # check compatibility with pip 10
+            try:
+                from pip._internal import main
+
+            except:
+                from pip import main
+
             for dep in missDeps:
                 print('=> installing {}...'.format(dep))
-                if dep.find('transcrypt') != -1:
-                    pip.main(['install', 'transcrypt'])
+                # if dep.find('transcrypt') != -1:
+                #    main(['install', 'transcrypt'])
 
-                else:
-                    pip.main(['install', dep])
+                # else:
+                main(['install', dep])
 
             try:
                 # updating all depedency
-                pip.main(main['install', 'update'])
+                main(main['install', 'update'])
 
             except Exception as ex:
                 print(ex)
@@ -165,12 +187,14 @@ def setupNewApp(appname):
         try:
             shutil.copytree(baseDir, appDir)
             print('-------------------------')
+
             def printStructureApp(prefix, appDirStruct):
                 for fileInDir in os.listdir(appDirStruct):
                     print('{}  {}'.format(prefix, fileInDir))
                     fileInDiPath = os.path.sep.join((appDirStruct, fileInDir))
                     if os.path.isdir(fileInDiPath):
-                        printStructureApp(((' '*len(prefix)) + '  +----'), fileInDiPath)
+                        printStructureApp(
+                            ((' '*len(prefix)) + '  +----'), fileInDiPath)
 
             printStructureApp('----', appDir)
 
@@ -217,10 +241,12 @@ def getDefaultApp():
 
     return appname
 
+
 def showApplicationList():
     appDir = glob.glob(os.path.sep.join((os.getcwd(), 'application', '*')))
     print('#')
-    filteredApp = [fapp.split(os.path.sep)[-1] for fapp in appDir if os.path.isdir(fapp)]
+    filteredApp = [fapp.split(os.path.sep)[-1]
+                   for fapp in appDir if os.path.isdir(fapp)]
     if len(filteredApp) != 0:
         for app in filteredApp:
             print('-> {}'.format(app))
@@ -230,6 +256,8 @@ def showApplicationList():
     print('#')
 
 # starting point
+
+
 def main():
     if sys.version_info.major < 3:
         print('#')
@@ -242,30 +270,39 @@ def main():
     parser = ArgumentParser()
 
     # server management
-    parser.add_argument('--start', help='start the application, --start appname')
+    parser.add_argument(
+        '--start', help='start the application, --start appname')
     parser.add_argument('--stop', help='stop the application, --stop appname')
     parser.add_argument('--host', help='set host of server')
     parser.add_argument('--port', help='set port of server', type=int)
-    parser.add_argument('--reloader', help='set reloader of server for auto reload on development mode', type=bool)
+    parser.add_argument(
+        '--reloader', help='set reloader of server for auto reload on development mode', type=bool)
     parser.add_argument('--debug', help='set debuging mode', type=bool)
-    parser.add_argument('--server', help='set server for serving the application')
+    parser.add_argument(
+        '--server', help='set server for serving the application')
     parser.add_argument('--interval', help='reload interval for auto reload')
     parser.add_argument('--certfile', help='ssl cert file')
     parser.add_argument('--keyfile', help='ssl key file')
-    parser.add_argument('--default', help='set default app, so we can only call app.py with param --startdefault and --stopdefault param. --default appname')
-    parser.add_argument('--showdefault', help='show the default application, --showdefault', action='store_true')
-    parser.add_argument('--showapps', help='show available application list, --showapps', action='store_true')
-    parser.add_argument('--stopdefault', help='stop the default application, --stopdefault', action='store_true')
-    parser.add_argument('--startdefault', help='start the default application, --startdefault', action='store_true')
+    parser.add_argument(
+        '--default', help='set default app, so we can only call app.py with param --startdefault and --stopdefault param. --default appname')
+    parser.add_argument(
+        '--showdefault', help='show the default application, --showdefault', action='store_true')
+    parser.add_argument(
+        '--showapps', help='show available application list, --showapps', action='store_true')
+    parser.add_argument(
+        '--stopdefault', help='stop the default application, --stopdefault', action='store_true')
+    parser.add_argument(
+        '--startdefault', help='start the default application, --startdefault', action='store_true')
 
     # project creation management
-    parser.add_argument('--setup', help='setup application (crate new application), --setup appname')
+    parser.add_argument(
+        '--setup', help='setup application (crate new application), --setup appname')
 
     #defaultapp = getDefaultApp()
-    #if defaultapp:
+    # if defaultapp:
     #    parser.set_defaults(start=defaultapp, stop=defaultapp)
 
-    #print(parser.get_default('start'))
+    # print(parser.get_default('start'))
 
     args = parser.parse_args()
 
@@ -332,6 +369,7 @@ def main():
             show available application
             python3 app.py --showapps
         ''')
+
 
 # run the main
 if __name__ == "__main__":
